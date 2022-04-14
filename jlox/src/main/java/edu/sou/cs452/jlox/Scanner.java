@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static edu.sou.cs452.jlox.TokenType.*;
+
+import edu.sou.cs452.jlox.generated.types.*;
+import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 class Scanner {
 
-    private static final Map<String, TokenType> keywords;
+    private static final Map<String,> keywords;
 
     static {
         keywords = new HashMap<>();
