@@ -1,9 +1,17 @@
 module Bagel exposing (main)
 
+-- For Api.Object.Show scope
+import Api.Object exposing (Show)
+import Api.Object.Show as ShowFields
+import Api.Query as Query
 import Browser
+import Graphql.Http
+import Graphql.Operation exposing (RootQuery)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
 import Html exposing (Html, button, div, input, pre, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import RemoteData exposing (RemoteData)
 
 -- Main
 
