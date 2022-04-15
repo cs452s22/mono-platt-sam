@@ -1,58 +1,114 @@
-module Bagel exposing (main)
+module Bagel exposing (..)
 
--- For Api.Object.Show scope
-import Api.Object exposing (Show)
-import Api.Object.Show as ShowFields
+-- For Api.Object.Token scope
+import Api.Enum.TokenType exposing (..)
+import Api.Object exposing (Token)
+import Api.Object.Token as TokenFields
 import Api.Query as Query
 import Browser
+import Html exposing (Html, Attribute, div, input, button, text, pre)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
+import Html.Events exposing (onInput)
 import Graphql.Http
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
-import Html exposing (Html, button, div, input, pre, text)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
 import RemoteData exposing (RemoteData)
 
 -- Main
 
-main = 
-    Browser.sandbox { init = init, update = update, view = view }
+type alias Response =
+    List Token
 
--- Model
-
-type alias Model =
-    { content : String
-    , inputContent : String
+type alias Token =
+    { ttype: TokenType
+    , lexeme: Lexeme
+    , line: Int
     }
-
-init : Model
-init =
-    { content = ""
-    , inputContent = ""
-    }
-
--- Update
 
 type Msg
-    = Scan
-    | Parse
-    | Change String
+    = GotResponse (RemoteData (Graphql.Http.Error Response) Response)
+    | ChangeText String
+    | Scan
 
-update : Msg -> Model -> Model
+type alias Model =
+    { filter : String
+    , tokens : RemoteData (Graphql.Http.Error Response) Response
+    }
+
+query : Model -> SelectionSet Response RootQuery
+query model =
+    Query.tokens { titleFilter = model.filter } tokenInfoSelection
+
+
+tokenInfoSelection : SelectionSet Token Api.Object.TokenFields
+tokenInfoSelection =
+    SelectionSet.map3 Token
+        TokenFields.ttype
+        TokenFields.lexeme
+        TokenFields.line
+
+makeRequest : Model -> Cmd Msg
+makeRequest model =
+    query model
+        |> Graphql.Http.queryRequest "http://localhost:8080/graphql"
+        |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
+
+type alias Flags =
+    ()
+
+init : Flags -> ( Model, Cmd Msg )
+init _ =
+    ( { tokens = RemoteData.NotAsked, filter = "" }, Cmd.none )
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Change newInputContent ->
-            { model | inputContent = newInputContent }
+        GotResponse response ->
+            ( { model | tokens = response }, Cmd.none )
+
+        ChangeText s ->
+            ( { model | filter = s }, Cmd.none )
+
         Scan ->
-            { model | content = String.join " " (List.map (\str -> "<" ++ str ++ ">") (String.words model.inputContent)) }
-        Parse ->
-            { model | content = String.join "\n" (List.map (\str -> "<" ++ str ++ ">") (String.words model.inputContent)) }
+            ( model, makeRequest model )
+
+main =
+    Browser.element
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
 
 view : Model -> Html Msg
-view model = 
+view model =
     div []
-    [ input [ placeholder "Your text here", onInput Change ] []
-    , button [ onClick Scan ] [ text "Scan" ]
-    , button [ onClick Parse ] [ text "Parse" ]
-    , pre [] [ text ( model.content ) ]
-    ]
+        [ input [ value model.filter, onInput ChangeText ] []
+        , div []
+            [ button [ onClick Scan ] [ text "Get Tokens" ]
+            ]
+        , div []
+            [ viewResponse model.tokens
+            ]
+        ]
+
+
+viewResponse model =
+    case model of
+        RemoteData.NotAsked ->
+            text ""
+
+        RemoteData.Loading ->
+            text "loading"
+
+        RemoteData.Success response ->
+            text (Debug.toString response)
+
+        RemoteData.Failure httpError ->
+            text ("Error: " ++ Debug.toString httpError)
