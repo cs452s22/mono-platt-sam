@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import edu.sou.cs452.jlox.generated.types.*;
 import edu.sou.cs452.jlox.generated.types.Token;
 import edu.sou.cs452.jlox.generated.types.TokenType;
@@ -15,7 +14,6 @@ import edu.sou.cs452.jlox.generated.types.LiteralFloat;
 import edu.sou.cs452.jlox.generated.types.LiteralBoolean;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
-
 
 class Scanner {
 
@@ -153,7 +151,7 @@ class Scanner {
             }
         }
 
-        addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
+        addToken(NUMBER, new LiteralFloat(Double.parseDouble(source.substring(start, current))));
     }
 
     private void string() {
@@ -173,7 +171,7 @@ class Scanner {
         advance();
 
         // trim the surrounding quotations
-        String value = source.substring(start + 1, current - 1);
+        LiteralString value = new LiteralString(source.substring(start + 1, current - 1));
         addToken(STRING, value);
     }
 
@@ -226,7 +224,7 @@ class Scanner {
         addToken(type, null);
     }
 
-    private void addToken(TokenType type, Object literal) {
+    private void addToken(TokenType type, LiteralValue literal) {
         String text = source.substring(start, current);
         tokens.add(new Token(type, text, literal, line));
     }
