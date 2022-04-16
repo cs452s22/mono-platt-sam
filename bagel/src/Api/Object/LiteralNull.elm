@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Query exposing (..)
+module Api.Object.LiteralNull exposing (..)
 
 import Api.InputObject
 import Api.Interface
@@ -16,16 +16,9 @@ import Graphql.Internal.Encode as Encode exposing (Value)
 import Graphql.Operation exposing (RootMutation, RootQuery, RootSubscription)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
-import Json.Decode as Decode exposing (Decoder)
+import Json.Decode as Decode
 
 
-type alias TokensRequiredArguments =
-    { code : String }
-
-
-tokens :
-    TokensRequiredArguments
-    -> SelectionSet decodesTo Api.Object.Token
-    -> SelectionSet (List decodesTo) RootQuery
-tokens requiredArgs____ object____ =
-    Object.selectionForCompositeField "tokens" [ Argument.required "code" requiredArgs____.code Encode.string ] object____ (Basics.identity >> Decode.list)
+value : SelectionSet Bool Api.Object.LiteralNull
+value =
+    Object.selectionForField "Bool" "value" [] Decode.bool

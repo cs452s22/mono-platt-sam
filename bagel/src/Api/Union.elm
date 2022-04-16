@@ -5,6 +5,5 @@
 module Api.Union exposing (..)
 
 
-placeholder : String
-placeholder =
-    ""
+type LiteralValue
+    = LiteralValue

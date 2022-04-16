@@ -5,5 +5,37 @@
 module Api.Object exposing (..)
 
 
-type Show
-    = Show
+type Binary
+    = Binary
+
+
+type Grouping
+    = Grouping
+
+
+type Literal
+    = Literal
+
+
+type LiteralBoolean
+    = LiteralBoolean
+
+
+type LiteralFloat
+    = LiteralFloat
+
+
+type LiteralNull
+    = LiteralNull
+
+
+type LiteralString
+    = LiteralString
+
+
+type Token
+    = Token
+
+
+type Unary
+    = Unary

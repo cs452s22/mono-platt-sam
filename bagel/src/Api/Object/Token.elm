@@ -2,8 +2,9 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Query exposing (..)
+module Api.Object.Token exposing (..)
 
+import Api.Enum.TokenType
 import Api.InputObject
 import Api.Interface
 import Api.Object
@@ -16,16 +17,26 @@ import Graphql.Internal.Encode as Encode exposing (Value)
 import Graphql.Operation exposing (RootMutation, RootQuery, RootSubscription)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
-import Json.Decode as Decode exposing (Decoder)
+import Json.Decode as Decode
 
 
-type alias TokensRequiredArguments =
-    { code : String }
+type_ : SelectionSet Api.Enum.TokenType.TokenType Api.Object.Token
+type_ =
+    Object.selectionForField "Enum.TokenType.TokenType" "type" [] Api.Enum.TokenType.decoder
 
 
-tokens :
-    TokensRequiredArguments
+lexeme : SelectionSet String Api.Object.Token
+lexeme =
+    Object.selectionForField "String" "lexeme" [] Decode.string
+
+
+literal :
+    SelectionSet decodesTo Api.Union.LiteralValue
     -> SelectionSet decodesTo Api.Object.Token
-    -> SelectionSet (List decodesTo) RootQuery
-tokens requiredArgs____ object____ =
-    Object.selectionForCompositeField "tokens" [ Argument.required "code" requiredArgs____.code Encode.string ] object____ (Basics.identity >> Decode.list)
+literal object____ =
+    Object.selectionForCompositeField "literal" [] object____ Basics.identity
+
+
+line : SelectionSet Int Api.Object.Token
+line =
+    Object.selectionForField "Int" "line" [] Decode.int

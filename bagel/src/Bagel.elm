@@ -22,7 +22,7 @@ type alias Response =
 
 type alias Token =
     { ttype: TokenType
-    , lexeme: Lexeme
+    , lexeme: String
     , line: Int
     }
 
@@ -41,10 +41,10 @@ query model =
     Query.tokens { titleFilter = model.filter } tokenInfoSelection
 
 
-tokenInfoSelection : SelectionSet Token Api.Object.TokenFields
+tokenInfoSelection : SelectionSet Token Api.Object.Token
 tokenInfoSelection =
     SelectionSet.map3 Token
-        TokenFields.ttype
+        Token.type
         TokenFields.lexeme
         TokenFields.line
 

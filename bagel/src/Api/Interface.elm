@@ -5,6 +5,5 @@
 module Api.Interface exposing (..)
 
 
-placeholder : String
-placeholder =
-    ""
+type Expr
+    = Expr
