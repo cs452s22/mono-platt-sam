@@ -21,7 +21,7 @@ type alias Response =
     List Token
 
 type alias Token =
-    { ttype: TokenType
+    { type_: TokenType
     , lexeme: String
     , line: Int
     }
@@ -38,13 +38,13 @@ type alias Model =
 
 query : Model -> SelectionSet Response RootQuery
 query model =
-    Query.tokens { titleFilter = model.filter } tokenInfoSelection
+    Query.tokens { code = model.filter } tokenInfoSelection
 
 
 tokenInfoSelection : SelectionSet Token Api.Object.Token
 tokenInfoSelection =
     SelectionSet.map3 Token
-        Token.type
+        TokenFields.type_
         TokenFields.lexeme
         TokenFields.line
 
