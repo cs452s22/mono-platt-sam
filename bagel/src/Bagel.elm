@@ -6,13 +6,12 @@ import Api.Object exposing (Token)
 import Api.Object.Token as TokenFields
 import Api.Query as Query
 import Browser
-import Html exposing (Html, Attribute, div, input, button, text, pre)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
-import Html.Events exposing (onInput)
 import Graphql.Http
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
+import Html exposing (Html, Attribute, div, input, button, text, pre)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 import RemoteData exposing (RemoteData)
 
 -- Main
