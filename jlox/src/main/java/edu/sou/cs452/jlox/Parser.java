@@ -122,7 +122,7 @@ public class Parser {
             int id = current; // set id to current id
             current++; // increment current by 1 for next
 
-            return new Literal(id, null); // TODO: confirm that this is correct
+            return new Literal(id, null);
         }
         if (match(NUMBER, STRING)) {
             int id = current; // set id to current id
