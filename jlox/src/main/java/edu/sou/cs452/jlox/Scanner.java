@@ -58,7 +58,7 @@ class Scanner {
             scanToken();
         }
 
-        tokens.add(new Token(EOF, "", null, line));
+        tokens.add(new Token(EOF, "", new LiteralNull(), line)); // changed from null to new LiteralNull()
         return tokens;
     }
 
@@ -220,7 +220,7 @@ class Scanner {
     }
 
     private void addToken(TokenType type) {
-        addToken(type, null);
+        addToken(type, new LiteralNull()); // changed from null to new LiteralNull()
     }
 
     private void addToken(TokenType type, LiteralValue literal) {

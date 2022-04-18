@@ -11,10 +11,6 @@ import java.util.List;
 import edu.sou.cs452.jlox.generated.types.*;
 import edu.sou.cs452.jlox.generated.types.Token;
 import edu.sou.cs452.jlox.generated.types.TokenType;
-import edu.sou.cs452.jlox.generated.types.LiteralValue;
-import edu.sou.cs452.jlox.generated.types.LiteralString;
-import edu.sou.cs452.jlox.generated.types.LiteralFloat;
-import edu.sou.cs452.jlox.generated.types.LiteralBoolean;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
@@ -57,16 +53,14 @@ public class Lox {
 
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
+
         Parser parser = new Parser(tokens);
         Expr expression = parser.parse();
 
         // stop if there was a syntax error
         if (hadError) return;
 
-        // For now, just print the tokens.
-        for (Token token : tokens) {
-            System.out.println(token);
-        }
+        System.out.println(expression); // changed this line during lab 3
     }
 
     static void error(int line, String message) {

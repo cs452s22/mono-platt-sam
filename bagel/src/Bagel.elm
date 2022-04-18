@@ -31,13 +31,13 @@ type Msg
     | Scan
 
 type alias Model =
-    { filter : String
+    { code : String -- changed from filter to code
     , tokens : RemoteData (Graphql.Http.Error Response) Response
     }
 
 query : Model -> SelectionSet Response RootQuery
 query model =
-    Query.tokens { code = model.filter } tokenInfoSelection
+    Query.tokens { code = model.code } tokenInfoSelection -- changed from filter to code
 
 
 tokenInfoSelection : SelectionSet Token Api.Object.Token
@@ -58,7 +58,7 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( { tokens = RemoteData.NotAsked, filter = "" }, Cmd.none )
+    ( { tokens = RemoteData.NotAsked, code = "" }, Cmd.none ) -- changed from filter to code
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -67,7 +67,7 @@ update msg model =
             ( { model | tokens = response }, Cmd.none )
 
         ChangeText s ->
-            ( { model | filter = s }, Cmd.none )
+            ( { model | code = s }, Cmd.none ) -- changed from filter to code
 
         Scan ->
             ( model, makeRequest model )
@@ -88,14 +88,18 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div []
-        [ input [ value model.filter, onInput ChangeText ] []
+        [ input [ value model.code, onInput ChangeText ] [] -- changed from filter to code
         , div []
             [ button [ onClick Scan ] [ text "Get Tokens" ]
             ]
         , div []
-            [ viewResponse model.tokens
-            ]
+            [ viewResponse model.tokens ]
         ]
+
+-- This function is what adds the brackets and also displays the type
+addBrackets : Token -> String
+addBrackets model =
+    "<" ++ Api.Enum.TokenType.toString(model.type_) ++ ">"
 
 
 viewResponse model =
@@ -107,7 +111,7 @@ viewResponse model =
             text "loading"
 
         RemoteData.Success response ->
-            text (Debug.toString response)
+            text (String.join " " (List.map addBrackets response)) -- changed this line to make it work
 
         RemoteData.Failure httpError ->
             text ("Error: " ++ Debug.toString httpError)
