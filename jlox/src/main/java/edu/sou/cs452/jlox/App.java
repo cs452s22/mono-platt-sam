@@ -10,10 +10,9 @@ import org.springframework.context.annotation.Bean;
  */
 public class App {
     public static void main(String[] args) {
-        // SpringApplication.run(App.class, args); // part 3 of lab 3???
-        System.out.println("Hello world");
+        SpringApplication.run(App.class, args); // part 3 of lab 3???
     }
-    /* // part 3 of lab 3???
+    // part 3 of lab 3???
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -23,5 +22,4 @@ public class App {
             }
         };
     }
-    */
 }
