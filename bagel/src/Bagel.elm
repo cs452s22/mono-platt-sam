@@ -28,7 +28,7 @@ type alias Token =
 type Msg
     = GotResponse (RemoteData (Graphql.Http.Error Response) Response)
     | ChangeText String
-    | Scan
+    | Run -- changed from Scan to Run for lab 4
 
 type alias Model =
     { code : String -- changed from filter to code
@@ -58,7 +58,7 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( { tokens = RemoteData.NotAsked, code = "" }, Cmd.none ) -- changed from filter to code
+    ( { tokens = RemoteData.NotAsked, code = "" }, Cmd.none ) -- changed from filter to code for lab 3
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -67,9 +67,9 @@ update msg model =
             ( { model | tokens = response }, Cmd.none )
 
         ChangeText s ->
-            ( { model | code = s }, Cmd.none ) -- changed from filter to code
+            ( { model | code = s }, Cmd.none ) -- changed from filter to code for lab 3
 
-        Scan ->
+        Run -> -- changed from Scan to Run for lab 4
             ( model, makeRequest model )
 
 main =
@@ -88,9 +88,9 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div []
-        [ input [ value model.code, onInput ChangeText ] [] -- changed from filter to code
+        [ input [ value model.code, onInput ChangeText ] [] -- changed from filter to code for lab 3
         , div []
-            [ button [ onClick Scan ] [ text "Get Tokens" ]
+            [ button [ onClick Run ] [ text "Get Tokens" ] -- changed from Scan to Run for lab 4
             ]
         , div []
             [ viewResponse model.tokens ]
