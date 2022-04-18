@@ -131,7 +131,7 @@ public class Parser {
             int id = current; // set id to current id
             current++; // increment current by 1 for next
 
-            return new Literal(id, previous().literal);
+            return new Literal(id, previous().getLiteral());
         }
     
         if (match(LEFT_PAREN)) {
@@ -166,7 +166,7 @@ public class Parser {
 
     private boolean check(TokenType type) {
         if (isAtEnd()) return false;
-        return peek().type == type;
+        return peek().getType() == type;
     }
 
     private Token advance() {
@@ -175,7 +175,7 @@ public class Parser {
     }
 
     private boolean isAtEnd() {
-        return peek().type == EOF;
+        return peek().getType() == EOF;
     }
 
     private Token peek() {
@@ -195,9 +195,9 @@ public class Parser {
         advance();
     
         while (!isAtEnd()) {
-            if (previous().type == SEMICOLON) return;
+            if (previous().getType() == SEMICOLON) return;
     
-            switch (peek().type) {
+            switch (peek().getType()) {
                 case CLASS:
                 case FUN:
                 case VAR:
