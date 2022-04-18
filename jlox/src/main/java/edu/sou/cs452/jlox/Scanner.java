@@ -95,12 +95,11 @@ class Scanner {
                     }
                 } else if (match('*')) {
                     // a C style block comment that goes from /* until */ is seen or the end is reached
-                    while (peek() != '*' && peekNext() != '/' && !isAtEnd()) {
+                    while (peek() !='*' && peekNext() != '/' && !isAtEnd()) {
+                        advance();
                         advance();
                     }
-                } else {
-                    addToken(SLASH);
-                }
+                } else addToken(SLASH);
                 break;
             case ' ':
             case '\r':
