@@ -84,7 +84,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
-
 view : Model -> Html Msg
 view model =
     div []
@@ -96,8 +95,8 @@ view model =
             [ viewResponse model.tokens ]
         ]
 
--- This function is what adds the brackets and also displays the type
-addBrackets : Token -> String
+-- This function is what adds the brackets and also displays the type of the Token
+addBrackets : Token -> String -- takes a Token as input, returns String
 addBrackets model =
     "<" ++ Api.Enum.TokenType.toString(model.type_) ++ ">"
 

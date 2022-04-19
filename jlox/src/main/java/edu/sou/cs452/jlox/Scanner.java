@@ -11,7 +11,6 @@ import edu.sou.cs452.jlox.generated.types.TokenType;
 import edu.sou.cs452.jlox.generated.types.LiteralValue;
 import edu.sou.cs452.jlox.generated.types.LiteralString;
 import edu.sou.cs452.jlox.generated.types.LiteralFloat;
-import edu.sou.cs452.jlox.generated.types.LiteralBoolean;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 

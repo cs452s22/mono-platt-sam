@@ -12,8 +12,6 @@ import edu.sou.cs452.jlox.generated.types.*;
 import edu.sou.cs452.jlox.generated.types.Token;
 import edu.sou.cs452.jlox.generated.types.TokenType;
 
-import static edu.sou.cs452.jlox.generated.types.TokenType.*;
-
 public class Lox {
 
     static boolean hadError = false;
