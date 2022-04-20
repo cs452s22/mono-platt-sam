@@ -97,3 +97,5 @@ type Grouping implements Expr {
   id : Int!
   expression : Expr!
 }
+
+run(code: String!) : String!
