@@ -9,7 +9,7 @@ import Browser
 import Graphql.Http
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
-import Html exposing (Html, Attribute, div, input, button, text, pre)
+import Html exposing (Html, button, div, input, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import RemoteData exposing (RemoteData)
@@ -20,7 +20,7 @@ type alias Response =
     List Token
 
 type alias Token =
-    { type_: TokenType
+    { type_: TokenType -- type is a reserved word
     , lexeme: String
     , line: Int
     }
@@ -31,8 +31,8 @@ type Msg
     | Scan
 
 type alias Model =
-    { code : String -- changed from filter to code
-    , tokens : RemoteData (Graphql.Http.Error Response) Response
+    { code: String -- changed from filter to code for lab 3
+    , tokens: RemoteData (Graphql.Http.Error Response) Response
     }
 
 query : Model -> SelectionSet Response RootQuery
@@ -50,7 +50,7 @@ tokenInfoSelection =
 makeRequest : Model -> Cmd Msg
 makeRequest model =
     query model
-        |> Graphql.Http.queryRequest "http://localhost:8080/graphql"
+        |> Graphql.Http.queryRequest "http://localhost:8000/graphql"
         |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
 
 type alias Flags =
@@ -98,8 +98,7 @@ view model =
 -- This function is what adds the brackets and also displays the type of the Token
 addBrackets : Token -> String -- takes a Token as input, returns String
 addBrackets model =
-    "<" ++ Api.Enum.TokenType.toString(model.type_) ++ ">"
-
+    "<" ++ Api.Enum.TokenType.toString(model.type_) ++ ">" -- convert the token type to a string and add angle brackets on both sides
 
 viewResponse model =
     case model of
