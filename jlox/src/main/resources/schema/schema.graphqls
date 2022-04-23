@@ -77,6 +77,11 @@ interface Expr {
   id : Int!
 }
 
+type Assign implements Expr {
+  name : Token!
+  value : Expr!
+}
+
 type Binary implements Expr {
   id : Int!
   left : Expr!
