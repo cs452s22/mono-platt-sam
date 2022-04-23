@@ -7,7 +7,7 @@ public interface ExprVisitor<T> {
     T visitGrouping(Grouping expr);
     T visitUnary(Unary expr);
     T visitLiteral(Literal expr);
-
+    
     default T accept(Expr e) {
         if (e instanceof Binary) {
             return visitBinary((Binary) e);
