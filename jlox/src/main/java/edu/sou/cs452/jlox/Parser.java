@@ -1,10 +1,11 @@
 package edu.sou.cs452.jlox;
 
-import java.util.List;
 import edu.sou.cs452.jlox.generated.types.*;
 import edu.sou.cs452.jlox.generated.types.Token;
 import edu.sou.cs452.jlox.generated.types.TokenType;
 import edu.sou.cs452.jlox.generated.types.LiteralBoolean;
+import java.util.ArrayList;
+import java.util.List;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
@@ -18,16 +19,58 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    Expr parse() {
-        try {
-            return expression();
-        } catch (ParseError error) {
-            return null;
+    List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
+        while (!isAtEnd()) {
+            statements.add(declaration());
         }
+    
+        return statements; 
     }
 
     private Expr expression() {
         return equality();
+    }
+
+    private Stmt declaration() {
+        try {
+            if (match(VAR)) return varDeclaration();
+    
+            return statement();
+        } catch (ParseError error) {
+            synchronize();
+            return null;
+        }
+    }
+
+    private Stmt statement() {
+        if (match(PRINT)) return printStatement();
+    
+        return expressionStatement();
+    }
+
+    private Stmt printStatement() {
+        Expr value = expression();
+        consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    private Stmt varDeclaration() {
+        Token name = consume(IDENTIFIER, "Expect variable name.");
+    
+        Expr initializer = null;
+        if (match(EQUAL)) {
+            initializer = expression();
+        }
+    
+        consume(SEMICOLON, "Expect ';' after variable declaration.");
+        return new Stmt.Var(name, initializer);
+    }
+
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
     }
 
     private Expr equality() {
@@ -130,7 +173,11 @@ public class Parser {
 
             return new Literal(id, previous().getLiteral());
         }
-    
+        
+        if (match(IDENTIFIER)) {
+            return new Expr.Variable(previous());
+        }
+
         if (match(LEFT_PAREN)) {
             Expr expr = expression();
             consume(RIGHT_PAREN, "Expect ')' after expression.");
