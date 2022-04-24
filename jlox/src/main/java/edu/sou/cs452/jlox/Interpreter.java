@@ -83,7 +83,7 @@ class Interpreter implements Visitor<Object>, Visitor<Void> {
         Object left = evaluate(expr.getLeft());
         Object right = evaluate(expr.getRight()); 
 
-        switch (expr.getOperator().type) {
+        switch (expr.getOperator().getType()) {
             case GREATER:
                 checkNumberOperands(expr.getOperator(), left, right);
                 return (double)left > (double)right;
@@ -133,7 +133,7 @@ class Interpreter implements Visitor<Object>, Visitor<Void> {
     public Object visitUnaryExpr(Unary expr) {
         Object right = evaluate(expr.getRight());
 
-        switch (expr.getOperator().type) {
+        switch (expr.getOperator().getType()) {
             case BANG:
                 return !isTruthy(right);
             case MINUS:

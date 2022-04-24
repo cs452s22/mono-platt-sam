@@ -114,15 +114,19 @@ interface Stmt {
 }
 
 type Block implements Stmt {
+  id : Int!
   statements : [Stmt!]
 }
 type Expression implements Stmt {
+  id : Int!
   expression : Expr!
 }
 type Print implements Stmt {
+  id : Int!
   expression : Expr!
 }
 type Var implements Stmt {
+  id : Int!
   name : Token!
   initializer : Expr!
 }
