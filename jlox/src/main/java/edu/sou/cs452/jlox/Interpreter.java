@@ -16,7 +16,7 @@ import java.util.List;
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 
-class Interpreter implements Visitor<Object>, Visitor<Void> {
+public class Interpreter implements Visitor<Object>, Visitor<Void> {
 
     private Environment environment = new Environment();
 

@@ -51,8 +51,15 @@ public class Parser {
     }
 
     private Stmt statement() {
-        if (match(PRINT)) { return printStatement(); }
-        if (match(LEFT_BRACE)) { return new Block(block()); }
+        if (match(PRINT)) {
+            return printStatement();
+        }
+        if (match(LEFT_BRACE)) {
+            int id = current; // set id to current id
+            current++; // increment current by 1 for next
+
+            return new Block(id, block());
+        }
     
         return expressionStatement();
     }
@@ -60,7 +67,11 @@ public class Parser {
     private Stmt printStatement() {
         Expr value = expression();
         consume(SEMICOLON, "Expect ';' after value.");
-        return new Print(value);
+
+        int id = current; // set id to current id
+        current++; // increment current by 1 for next
+
+        return new Print(id, value);
     }
 
     private Stmt varDeclaration() {
@@ -72,13 +83,21 @@ public class Parser {
         }
     
         consume(SEMICOLON, "Expect ';' after variable declaration.");
-        return new Var(name, initializer);
+
+        int id = current; // set id to current id
+        current++; // increment current by 1 for next
+
+        return new Var(id, name, initializer);
     }
 
     private Stmt expressionStatement() {
         Expr expr = expression();
         consume(SEMICOLON, "Expect ';' after expression.");
-        return new Expression(expr);
+
+        int id = current; // set id to current id
+        current++; // increment current by 1 for next
+
+        return new Expression(id, expr);
     }
 
     private List<Stmt> block() {
@@ -101,7 +120,11 @@ public class Parser {
         
             if (expr instanceof Variable) {
                 Token name = ((Variable)expr).getName();
-                return new Assign(name, value);
+
+                int id = current; // set id to current id
+                current++; // increment current by 1 for next
+
+                return new Assign(id, name, value);
             }
     
             error(equals, "Invalid assignment target."); 
@@ -211,7 +234,10 @@ public class Parser {
         }
         
         if (match(IDENTIFIER)) {
-            return new Variable(previous());
+            int id = current; // set id to current id
+            current++; // increment current by 1 for next
+
+            return new Variable(id, previous());
         }
 
         if (match(LEFT_PAREN)) {
