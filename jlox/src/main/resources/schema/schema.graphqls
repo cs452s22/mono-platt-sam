@@ -55,35 +55,27 @@ type Token {
   line : Int!
 }
 
+# Literal Types
 union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull
 
-type LiteralString {
-  value : String!
+type LiteralBoolean {
+  value : Boolean!
 }
 
 type LiteralFloat {
   value : Float!
 }
 
-type LiteralBoolean {
-  value : Boolean!
-}
-
 type LiteralNull {
   value : Boolean!
 }
 
+type LiteralString {
+  value : String!
+}
+
 interface Expr {
   id : Int!
-}
-
-type Print implements Expr {
-  expression : Expr!
-}
-
-type Var implements Expr {
-  name : Token!
-  initializer : Expr!
 }
 
 type Assign implements Expr {
@@ -91,26 +83,46 @@ type Assign implements Expr {
   name : Token!
   value : Expr!
 }
-
 type Binary implements Expr {
   id : Int!
   left : Expr!
   operator : Token!
   right : Expr!
 }
-
+type Grouping implements Expr {
+  id : Int!
+  expression : Expr!
+}
+type Literal implements Expr {
+  id : Int!
+  value : LiteralValue!
+}
 type Unary implements Expr {
   id : Int!
   operator : Token!
   right : Expr!
 }
-
-type Literal implements Expr {
+type Variable implements Expr {
   id : Int!
-  value : LiteralValue!
+  name : Token!
 }
 
-type Grouping implements Expr {
-  id : Int!
+#### interface Stmt
+
+interface Stmt {
+  id : Int! 
+}
+
+type Block implements Stmt {
+  statements : [Stmt!]
+}
+type Expression implements Stmt {
   expression : Expr!
+}
+type Print implements Stmt {
+  expression : Expr!
+}
+type Var implements Stmt {
+  name : Token!
+  initializer : Expr!
 }

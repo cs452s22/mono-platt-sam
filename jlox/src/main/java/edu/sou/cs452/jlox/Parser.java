@@ -1,9 +1,16 @@
 package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.generated.types.*;
+import edu.sou.cs452.jlox.generated.types.Assign;
+import edu.sou.cs452.jlox.generated.types.Block;
+import edu.sou.cs452.jlox.generated.types.Expr;
+import edu.sou.cs452.jlox.generated.types.Expression;
+import edu.sou.cs452.jlox.generated.types.LiteralBoolean;
+import edu.sou.cs452.jlox.generated.types.Print;
 import edu.sou.cs452.jlox.generated.types.Token;
 import edu.sou.cs452.jlox.generated.types.TokenType;
-import edu.sou.cs452.jlox.generated.types.LiteralBoolean;
+import edu.sou.cs452.jlox.generated.types.Var;
+import edu.sou.cs452.jlox.generated.types.Variable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +52,7 @@ public class Parser {
 
     private Stmt statement() {
         if (match(PRINT)) { return printStatement(); }
-        if (match(LEFT_BRACE)) { return new Stmt.Block(block()); }
+        if (match(LEFT_BRACE)) { return new Block(block()); }
     
         return expressionStatement();
     }
@@ -53,7 +60,7 @@ public class Parser {
     private Stmt printStatement() {
         Expr value = expression();
         consume(SEMICOLON, "Expect ';' after value.");
-        return new Stmt.Print(value);
+        return new Print(value);
     }
 
     private Stmt varDeclaration() {
@@ -65,13 +72,13 @@ public class Parser {
         }
     
         consume(SEMICOLON, "Expect ';' after variable declaration.");
-        return new Stmt.Var(name, initializer);
+        return new Var(name, initializer);
     }
 
     private Stmt expressionStatement() {
         Expr expr = expression();
         consume(SEMICOLON, "Expect ';' after expression.");
-        return new Stmt.Expression(expr);
+        return new Expression(expr);
     }
 
     private List<Stmt> block() {
@@ -92,9 +99,9 @@ public class Parser {
             Token equals = previous();
             Expr value = assignment();
         
-            if (expr instanceof Expr.Variable) {
-                Token name = ((Expr.Variable)expr).name;
-                return new Expr.Assign(name, value);
+            if (expr instanceof Variable) {
+                Token name = ((Variable)expr).getName();
+                return new Assign(name, value);
             }
     
             error(equals, "Invalid assignment target."); 
@@ -204,7 +211,7 @@ public class Parser {
         }
         
         if (match(IDENTIFIER)) {
-            return new Expr.Variable(previous());
+            return new Variable(previous());
         }
 
         if (match(LEFT_PAREN)) {

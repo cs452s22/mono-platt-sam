@@ -1,14 +1,22 @@
 package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.generated.types.*;
+import edu.sou.cs452.jlox.generated.types.Assign;
+import edu.sou.cs452.jlox.generated.types.Block;
+import edu.sou.cs452.jlox.generated.types.Expr;
+import edu.sou.cs452.jlox.generated.types.Expression;
+import edu.sou.cs452.jlox.generated.types.LiteralBoolean;
+import edu.sou.cs452.jlox.generated.types.Print;
 import edu.sou.cs452.jlox.generated.types.Token;
 import edu.sou.cs452.jlox.generated.types.TokenType;
+import edu.sou.cs452.jlox.generated.types.Var;
+import edu.sou.cs452.jlox.generated.types.Variable;
 import java.util.List;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 
-class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+class Interpreter implements Visitor<Object>, Visitor<Void> {
 
     private Environment environment = new Environment();
 
@@ -34,62 +42,62 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Void visitBlockStmt(Stmt.Block stmt) {
-        executeBlock(stmt.statements, new Environment(environment));
+    public Void visitBlockStmt(Block stmt) {
+        executeBlock(stmt.getStatements(), new Environment(environment));
         return null;
     }
 
     @Override
-    public Void visitExpressionStmt(Stmt.Expression stmt) {
-        evaluate(stmt.expression);
+    public Void visitExpressionStmt(Expression stmt) {
+        evaluate(stmt.getExpression());
         return null;
     }
 
     @Override
-    public Void visitPrintStmt(Stmt.Print stmt) {
-        Object value = evaluate(stmt.expression);
+    public Void visitPrintStmt(Print stmt) {
+        Object value = evaluate(stmt.getExpression());
         System.out.println(stringify(value));
         return null;
     }
 
     @Override
-    public Void visitVarStmt(Stmt.Var stmt) {
+    public Void visitVarStmt(Var stmt) {
         Object value = null;
-        if (stmt.initializer != null) {
-            value = evaluate(stmt.initializer);
+        if (stmt.getInitializer() != null) {
+            value = evaluate(stmt.getInitializer());
         }
 
-        environment.define(stmt.name.lexeme, value);
+        environment.define(stmt.getName().getLexeme(), value);
         return null;
     }
 
     @Override
-    public Object visitAssignExpr(Expr.Assign expr) {
-        Object value = evaluate(expr.value);
-        environment.assign(expr.name, value);
+    public Object visitAssignExpr(Assign expr) {
+        Object value = evaluate(expr.getValue());
+        environment.assign(expr.getName(), value);
         return value;
     }
 
     @Override
-    public Object visitBinaryExpr(Expr.Binary expr) {
-        Object left = evaluate(expr.left);
-        Object right = evaluate(expr.right); 
+    public Object visitBinaryExpr(Binary expr) {
+        Object left = evaluate(expr.getLeft());
+        Object right = evaluate(expr.getRight()); 
 
-        switch (expr.operator.type) {
+        switch (expr.getOperator().type) {
             case GREATER:
-                checkNumberOperands(expr.operator, left, right);
+                checkNumberOperands(expr.getOperator(), left, right);
                 return (double)left > (double)right;
             case GREATER_EQUAL:
-                checkNumberOperands(expr.operator, left, right);
+                checkNumberOperands(expr.getOperator(), left, right);
                 return (double)left >= (double)right;
             case LESS:
-                checkNumberOperands(expr.operator, left, right);
+                checkNumberOperands(expr.getOperator(), left, right);
                 return (double)left < (double)right;
             case LESS_EQUAL:
-                checkNumberOperands(expr.operator, left, right);
+                checkNumberOperands(expr.getOperator(), left, right);
                 return (double)left <= (double)right;
             case MINUS:
-                checkNumberOperands(expr.operator, left, right);
+                checkNumberOperands(expr.getOperator(), left, right);
                 return (double)left - (double)right;
             case PLUS:
                 if (left instanceof Double && right instanceof Double) {
@@ -98,13 +106,13 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                 if (left instanceof String && right instanceof String) {
                   return (String)left + (String)right;
                 }
-                throw new RuntimeError(expr.operator,
+                throw new RuntimeError(expr.getOperator(),
                     "Operands must be two numbers or two strings.");
             case SLASH:
-                checkNumberOperands(expr.operator, left, right);
+                checkNumberOperands(expr.getOperator(), left, right);
                 return (double)left / (double)right;
             case STAR:
-                checkNumberOperands(expr.operator, left, right);
+                checkNumberOperands(expr.getOperator(), left, right);
                 return (double)left * (double)right;
             case BANG_EQUAL:
                 return !isEqual(left, right);
@@ -117,19 +125,19 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Object visitLiteralExpr(Expr.Literal expr) {
-        return expr.value;
+    public Object visitLiteralExpr(Literal expr) {
+        return expr.getValue();
     }
 
     @Override
-    public Object visitUnaryExpr(Expr.Unary expr) {
-        Object right = evaluate(expr.right);
+    public Object visitUnaryExpr(Unary expr) {
+        Object right = evaluate(expr.getRight());
 
-        switch (expr.operator.type) {
+        switch (expr.getOperator().type) {
             case BANG:
                 return !isTruthy(right);
             case MINUS:
-                checkNumberOperand(expr.operator, right);
+                checkNumberOperand(expr.getOperator(), right);
                 return -(double)right;
         }
 
@@ -138,8 +146,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Object visitVariableExpr(Expr.Variable expr) {
-        return environment.get(expr.name);
+    public Object visitVariableExpr(Variable expr) {
+        return environment.get(expr.getName());
     }
 
     private void checkNumberOperand(Token operator, Object operand) {
@@ -153,8 +161,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Object visitGroupingExpr(Expr.Grouping expr) {
-        return evaluate(expr.expression);
+    public Object visitGroupingExpr(Grouping expr) {
+        return evaluate(expr.getExpression());
     }
 
     private boolean isTruthy(Object object) {
