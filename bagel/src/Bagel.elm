@@ -12,6 +12,7 @@ import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
 import Html exposing (Html, Attribute, div, input, button, text, pre)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Http
 import RemoteData exposing (RemoteData)
 
 -- Main
@@ -105,13 +106,25 @@ addBrackets model =
 viewResponse model =
     case model of
         RemoteData.NotAsked ->
+            -- when the user hasn't run the program
             text ""
 
         RemoteData.Loading ->
+            -- when the program is loading
             text "loading"
 
         RemoteData.Success response ->
+            -- when the program ahs run and the result is available
             text (String.join " " (List.map addBrackets response)) -- changed this line to make it work
 
-        RemoteData.Failure httpError ->
-            text ("Error: " ++ Debug.toString httpError)
+        RemoteData.Failure err ->
+            case err of
+                HttpError NetworkError ->
+                    -- Cannot connect to server
+                    text ("Http Error: " ++ Debug.toString)
+                GraphqlError _ errors ->
+                    -- Program returns an exception
+                    text ("Graphql Error: " ++ Debug.toString)
+                _ ->
+                    -- Other, unknown error
+                    text ("Error: " ++ Debug.toString)
