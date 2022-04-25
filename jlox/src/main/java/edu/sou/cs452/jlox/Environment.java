@@ -9,7 +9,7 @@ import java.util.Map;
 
 class Environment {
     final Environment enclosing;
-    private final Map<String, Object> values = new HashMap<>();
+    private final Map<String, LiteralValue> values = new HashMap<>();
 
     Environment() {
         enclosing = null;
@@ -19,7 +19,7 @@ class Environment {
         this.enclosing = enclosing;
     }
 
-    Object get(Token name) {
+    LiteralValue get(Token name) {
         if (values.containsKey(name.getLexeme())) {
           return values.get(name.getLexeme());
         }
@@ -30,7 +30,7 @@ class Environment {
             "Undefined variable '" + name.getLexeme() + "'.");
     }
 
-    void assign(Token name, Object value) {
+    void assign(Token name, LiteralValue value) {
         if (values.containsKey(name.getLexeme())) {
             values.put(name.getLexeme(), value);
             return;
@@ -45,7 +45,7 @@ class Environment {
             "Undefined variable '" + name.getLexeme() + "'.");
     }
 
-    void define(String name, Object value) {
+    void define(String name, LiteralValue value) {
         values.put(name, value);
     }
 }
