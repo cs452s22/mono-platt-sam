@@ -5,14 +5,10 @@ import edu.sou.cs452.jlox.generated.types.*;
 public interface ExprVisitor<T> {
     T visitAssignExpr(Assign expr);
     T visitBinaryExpr(Binary expr);
-    T visitBlockStmt(Block stmt);
     T visitGroupingExpr(Grouping expr);
-    T visitExpressionStmt(Expression stmt);
-    T visitPrintStmt(Print stmt);
     T visitLiteralExpr(Literal expr);
     T visitUnaryExpr(Unary expr);
     T visitVariableExpr(Variable expr);
-    T visitVarStmt(Var stmt);
     
     default T accept(Expr e) {
         if (e instanceof Assign) {
