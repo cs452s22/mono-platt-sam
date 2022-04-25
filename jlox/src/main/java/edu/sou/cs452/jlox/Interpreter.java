@@ -6,7 +6,7 @@ import java.util.List;
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 
-public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Void> { // changed this line for lab 4
+public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Object> { // changed this line for lab 4
 
     private Environment environment = new Environment();
 

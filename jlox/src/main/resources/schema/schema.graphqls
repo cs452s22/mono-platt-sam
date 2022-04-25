@@ -55,29 +55,27 @@ type Token {
   line : Int!
 }
 
-# Literal Types
+### Literal Types
 union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull
 
 type LiteralBoolean {
   value : Boolean!
 }
-
 type LiteralFloat {
   value : Float!
 }
-
 type LiteralNull {
   value : Boolean!
 }
-
 type LiteralString {
   value : String!
 }
 
+### Interface Expr Types
+
 interface Expr {
   id : Int!
 }
-
 type Assign implements Expr {
   id : Int!
   name : Token!
@@ -107,12 +105,11 @@ type Variable implements Expr {
   name : Token!
 }
 
-#### interface Stmt
+#### Interface Stmt Types
 
 interface Stmt {
   id : Int! 
 }
-
 type Block implements Stmt {
   id : Int!
   statements : [Stmt!]
