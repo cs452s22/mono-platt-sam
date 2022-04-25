@@ -1,31 +1,21 @@
 package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.generated.types.*;
-import edu.sou.cs452.jlox.generated.types.Assign;
-import edu.sou.cs452.jlox.generated.types.Block;
-import edu.sou.cs452.jlox.generated.types.Expr;
-import edu.sou.cs452.jlox.generated.types.Expression;
-import edu.sou.cs452.jlox.generated.types.LiteralBoolean;
-import edu.sou.cs452.jlox.generated.types.Print;
-import edu.sou.cs452.jlox.generated.types.Token;
-import edu.sou.cs452.jlox.generated.types.TokenType;
-import edu.sou.cs452.jlox.generated.types.Var;
-import edu.sou.cs452.jlox.generated.types.Variable;
 import java.util.List;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 
-public class Interpreter implements Visitor<Object>, Visitor<Void> {
+public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Void> { // changed this line for lab 4
 
     private Environment environment = new Environment();
 
     private Object evaluate(Expr expr) {
-        return expr.accept(this);
+        return accept(expr); // changed this line for lab 4
     }
 
     private void execute(Stmt stmt) {
-        stmt.accept(this);
+        accept(stmt); // changed this line for lab 4
     }
 
     void executeBlock(List<Stmt> statements, Environment environment) {
@@ -83,6 +73,7 @@ public class Interpreter implements Visitor<Object>, Visitor<Void> {
         Object left = evaluate(expr.getLeft());
         Object right = evaluate(expr.getRight()); 
 
+        // TODO: figure out if I need to add code for other cases for lab 4
         switch (expr.getOperator().getType()) {
             case GREATER:
                 checkNumberOperands(expr.getOperator(), left, right);
