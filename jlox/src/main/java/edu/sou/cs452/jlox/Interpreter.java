@@ -80,23 +80,12 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         LiteralValue right = evaluate(expr.getRight()); 
 
         switch (expr.getOperator().getType()) {
-            case AND: // TODO: Maybe actually implement this case eventually
-                checkNumberOperands(expr.getOperator(), left, right);
-                throw new RuntimeError(expr.getOperator(), 
-                "The method visitBinary() not implemented for this operator type.");
-            case BANG: // TODO: Maybe actually implement this case eventually
-                checkNumberOperands(expr.getOperator(), left, right);
-                throw new RuntimeError(expr.getOperator(), 
-                "The method visitBinary() not implemented for this operator type.");
-            case CLASS: // TODO: Maybe actually implement this case eventually
-                checkNumberOperands(expr.getOperator(), left, right);
-                throw new RuntimeError(expr.getOperator(), 
-                "The method visitBinary() not implemented for this operator type.");
             case GREATER:
                 checkNumberOperands(expr.getOperator(), left, right);
                 if (left instanceof LiteralFloat && right instanceof LiteralFloat) { // we previously assumed left and right were doubles, now we have to confirm this
                     LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
                     LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+
                     return new LiteralBoolean(l.getValue() > r.getValue());
                 }
                 throw new RuntimeError(expr.getOperator(),
@@ -106,6 +95,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
                 if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
                     LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
                     LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+
                     return new LiteralBoolean(l.getValue() >= r.getValue());
                 }
                 throw new RuntimeError(expr.getOperator(),
@@ -115,6 +105,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
                 if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
                     LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
                     LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+
                     return new LiteralBoolean(l.getValue() < r.getValue());
                 }
                 throw new RuntimeError(expr.getOperator(),
@@ -138,14 +129,18 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
                 throw new RuntimeError(expr.getOperator(),
                 "Operands must be two numbers.");
             case PLUS:
+                checkNumberOperands(expr.getOperator(), left, right);
+                // addition
                 if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
                     LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
                     LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
                     return new LiteralFloat(l.getValue() + r.getValue());
                 }
+                // concatenation
                 if (left instanceof LiteralString && right instanceof LiteralString) {
                     LiteralString l = (LiteralString)left; // cast to LiteralString
                     LiteralString r = (LiteralString)right; // cast to LiteralString
+
                     return new LiteralString(l.getValue() + r.getValue());
                 }
                 throw new RuntimeError(expr.getOperator(),
@@ -155,20 +150,23 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
                 if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
                     LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
                     LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+
                     return new LiteralFloat(l.getValue() / r.getValue());
                 }
                 throw new RuntimeError(expr.getOperator(),
                 "Operands must be two numbers or two strings.");
-            case STAR:
+            case STAR: // multiplication
                 checkNumberOperands(expr.getOperator(), left, right);
                 if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
                     LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
                     LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+
                     return new LiteralFloat(l.getValue() * r.getValue());
                 }
                 throw new RuntimeError(expr.getOperator(),
                 "Operands must be two numbers.");
             case BANG_EQUAL:
+                checkNumberOperands(expr.getOperator(), left, right);
                 if (left instanceof LiteralBoolean && right instanceof LiteralBoolean) {
                     LiteralBoolean l = (LiteralBoolean)left;
                     LiteralBoolean r = (LiteralBoolean)right;
@@ -189,7 +187,9 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
                 }
                 throw new RuntimeError(expr.getOperator(),
                 "Operands must be two booleans, two numbers, or two strings.");
+            
             case EQUAL_EQUAL:
+                checkNumberOperands(expr.getOperator(), left, right);
                 if (left instanceof LiteralBoolean && right instanceof LiteralBoolean) {
                     LiteralBoolean l = (LiteralBoolean)left;
                     LiteralBoolean r = (LiteralBoolean)right;
@@ -210,9 +210,10 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
                 }
                 throw new RuntimeError(expr.getOperator(),
                 "Operands must be two booleans, two numbers, or two strings.");
+            default:
+                throw new RuntimeError(expr.getOperator(), 
+                "The method visitBinary() not implemented for this operator type.");   
         }
-        // Unreachable.
-        return null;
     }
 
     @Override
@@ -224,7 +225,6 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     public LiteralValue visitUnaryExpr(Unary expr) {
         LiteralValue right = evaluate(expr.getRight());
 
-        // TODO: implement other cases
         switch (expr.getOperator().getType()) {
             case BANG:
                 if (right instanceof LiteralBoolean) {
@@ -241,10 +241,10 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
                 }
                 throw new RuntimeError(expr.getOperator(),
                 "Operand must be a number.");
+            default:
+                throw new RuntimeError(expr.getOperator(), 
+                "The method visitUnaryExpr() not implemented for this operator type.");   
         }
-
-        // Unreachable.
-        return null;
     }
 
     @Override
