@@ -124,7 +124,7 @@ viewResponse model =
                     text ("Http Error: Cannot connect to server")
                 GraphqlError _ errors ->
                     -- Program returns an exception
-                    text ("Graphql Error: " ++ errors.toString)
+                    text ("Graphql Error: " ++ errors.toString) -- might not need the toString part
                 _ ->
                     -- Other, unknown error
                     text ("Error: " ++ Debug.toString)
