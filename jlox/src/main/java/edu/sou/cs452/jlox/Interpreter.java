@@ -74,7 +74,7 @@ public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Object> { /
         Object left = evaluate(expr.getLeft());
         Object right = evaluate(expr.getRight()); 
 
-        // TODO: figure out if I need to add code for other cases for lab 4
+        // TODO: figure out if I need to add code for other cases
         switch (expr.getOperator().getType()) {
             case GREATER:
                 checkNumberOperands(expr.getOperator(), left, right);
@@ -125,6 +125,7 @@ public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Object> { /
     public Object visitUnaryExpr(Unary expr) {
         Object right = evaluate(expr.getRight());
 
+        // TODO: figure out if I need to add code for other cases
         switch (expr.getOperator().getType()) {
             case BANG:
                 return !isTruthy(right);
