@@ -48,14 +48,14 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public Void visitPrintStmt(Print stmt) {
-        Object value = evaluate(stmt.getExpression());
+        LiteralValue value = evaluate(stmt.getExpression());
         System.out.println(stringify(value));
         return null;
     }
 
     @Override
     public Void visitVarStmt(Var stmt) {
-        Object value = null;
+        LiteralValue value = null;
         if (stmt.getInitializer() != null) {
             value = evaluate(stmt.getInitializer());
         }
@@ -170,19 +170,19 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
                     LiteralBoolean l = (LiteralBoolean)left;
                     LiteralBoolean r = (LiteralBoolean)right;
 
-                    return new LiteralBoolean(!isEqual(l.getValue(), r.getValue()));
+                    return new LiteralBoolean(!isEqual(l, r));
                 }
                 if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
                     LiteralFloat l = (LiteralFloat)left;
                     LiteralFloat r = (LiteralFloat)right;
 
-                    return new LiteralBoolean(!isEqual(l.getValue(), r.getValue()));
+                    return new LiteralBoolean(!isEqual(l, r));
                 }
                 if (left instanceof LiteralString && right instanceof LiteralString) {
                     LiteralString l = (LiteralString)left;
                     LiteralString r = (LiteralString)right;
 
-                    return new LiteralBoolean(!isEqual(l.getValue(), r.getValue()));
+                    return new LiteralBoolean(!isEqual(l, r));
                 }
                 throw new RuntimeError(expr.getOperator(),
                 "Operands must be two booleans, two numbers, or two strings.");
@@ -191,19 +191,19 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
                     LiteralBoolean l = (LiteralBoolean)left;
                     LiteralBoolean r = (LiteralBoolean)right;
 
-                    return new LiteralBoolean(isEqual(l.getValue(), r.getValue()));
+                    return new LiteralBoolean(isEqual(l, r));
                 }
                 if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
                     LiteralFloat l = (LiteralFloat)left;
                     LiteralFloat r = (LiteralFloat)right;
 
-                    return new LiteralBoolean(isEqual(l.getValue(), r.getValue()));
+                    return new LiteralBoolean(isEqual(l, r));
                 }
                 if (left instanceof LiteralString && right instanceof LiteralString) {
                     LiteralString l = (LiteralString)left;
                     LiteralString r = (LiteralString)right;
 
-                    return new LiteralBoolean(isEqual(l.getValue(), r.getValue()));
+                    return new LiteralBoolean(isEqual(l, r));
                 }
                 throw new RuntimeError(expr.getOperator(),
                 "Operands must be two booleans, two numbers, or two strings.");
@@ -226,18 +226,10 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
             case BANG:
                 if (right instanceof LiteralBoolean) {
                     LiteralBoolean r = (LiteralBoolean)right;
-                    return new LiteralBoolean(!isTruthy(r.getValue()));
-                }
-                if (right instanceof LiteralFloat) {
-                    LiteralFloat r = (LiteralFloat)right;
-                    return new LiteralBoolean(!isTruthy(r.getValue()));
-                }
-                if (right instanceof LiteralString) {
-                    LiteralString r = (LiteralString)right;
-                    return new LiteralBoolean(!isTruthy(r.getValue()));
+                    return new LiteralBoolean(!isTruthy(r));
                 }
                 throw new RuntimeError(expr.getOperator(),
-                "Operands must be a boolean, number, or string.");
+                "Operands must be a boolean.");
             case MINUS:
                 checkNumberOperand(expr.getOperator(), right);
                 if (right instanceof LiteralFloat) {
@@ -257,13 +249,13 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         return environment.get(expr.getName());
     }
 
-    private Void checkNumberOperand(Token operator, Object operand) {
-        if (operand instanceof Double) { return null; }
+    private Void checkNumberOperand(Token operator, LiteralValue operand) {
+        if (operand instanceof LiteralFloat) { return null; }
         throw new RuntimeError(operator, "Operand must be a number.");
     }
 
-    private Void checkNumberOperands(Token operator, Object left, Object right) {
-        if (left instanceof Double && right instanceof Double) { return null; }
+    private Void checkNumberOperands(Token operator, LiteralValue left, LiteralValue right) {
+        if (left instanceof LiteralFloat && right instanceof LiteralFloat) { return null; }
         throw new RuntimeError(operator, "Operands must be numbers.");
     }
 
@@ -272,23 +264,23 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         return evaluate(expr.getExpression());
     }
 
-    private boolean isTruthy(Object object) {
+    private boolean isTruthy(LiteralBoolean object) {
         if (object == null) { return false; }
-        if (object instanceof Boolean) { return (boolean)object; }
+        if (object instanceof LiteralBoolean) { return object.getValue(); }
         return true;
     }
 
-    private boolean isEqual(Object a, Object b) {
+    private boolean isEqual(LiteralValue a, LiteralValue b) {
         if (a == null && b == null) { return true; }
         if (a == null) { return false; }
     
         return a.equals(b);
     }
 
-    private String stringify(Object object) {
+    private String stringify(LiteralValue object) {
         if (object == null) return "nil";
     
-        if (object instanceof Double) {
+        if (object instanceof LiteralFloat) {
             String text = object.toString();
             if (text.endsWith(".0")) {
                 text = text.substring(0, text.length() - 2);
