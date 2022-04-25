@@ -20,7 +20,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         return null;
     }
 
-    void executeBlock(List<Stmt> statements, Environment environment) {
+    Void executeBlock(List<Stmt> statements, Environment environment) {
         Environment previous = this.environment;
         try {
             this.environment = environment;
@@ -31,6 +31,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         } finally {
             this.environment = previous;
         }
+        return null;
     }
 
     @Override
@@ -256,13 +257,13 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         return environment.get(expr.getName());
     }
 
-    private void checkNumberOperand(Token operator, Object operand) {
-        if (operand instanceof Double) { return; }
+    private Void checkNumberOperand(Token operator, Object operand) {
+        if (operand instanceof Double) { return null; }
         throw new RuntimeError(operator, "Operand must be a number.");
     }
 
-    private void checkNumberOperands(Token operator, Object left, Object right) {
-        if (left instanceof Double && right instanceof Double) { return; }
+    private Void checkNumberOperands(Token operator, Object left, Object right) {
+        if (left instanceof Double && right instanceof Double) { return null; }
         throw new RuntimeError(operator, "Operands must be numbers.");
     }
 
@@ -298,7 +299,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         return object.toString();
     }
 
-    void interpret(List<Stmt> statements) {
+    Void interpret(List<Stmt> statements) {
         try {
             for (Stmt statement : statements) {
                 execute(statement);
@@ -306,5 +307,6 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         } catch (RuntimeError error) {
             Lox.runtimeError(error);
         }
+        return null;
     }
 }
