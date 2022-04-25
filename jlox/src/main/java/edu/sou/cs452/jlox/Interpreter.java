@@ -14,8 +14,8 @@ public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Object> { /
         return accept(expr); // changed this line for lab 4
     }
 
-    private void execute(Stmt stmt) {
-        accept(stmt); // changed this line for lab 4
+    private Object execute(Stmt stmt) {
+        return accept(stmt); // changed this line for lab 4
     }
 
     void executeBlock(List<Stmt> statements, Environment environment) {
