@@ -1,16 +1,6 @@
 package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.generated.types.*;
-import edu.sou.cs452.jlox.generated.types.Assign;
-import edu.sou.cs452.jlox.generated.types.Block;
-import edu.sou.cs452.jlox.generated.types.Expr;
-import edu.sou.cs452.jlox.generated.types.Expression;
-import edu.sou.cs452.jlox.generated.types.LiteralBoolean;
-import edu.sou.cs452.jlox.generated.types.Print;
-import edu.sou.cs452.jlox.generated.types.Token;
-import edu.sou.cs452.jlox.generated.types.TokenType;
-import edu.sou.cs452.jlox.generated.types.Var;
-import edu.sou.cs452.jlox.generated.types.Variable;
 import java.util.ArrayList;
 import java.util.List;
 

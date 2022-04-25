@@ -1,13 +1,11 @@
 package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.generated.types.*;
-import edu.sou.cs452.jlox.generated.types.Token;
-import edu.sou.cs452.jlox.generated.types.TokenType;
-import edu.sou.cs452.jlox.generated.types.LiteralBoolean;
 import java.util.HashMap;
 import java.util.Map;
 
-import static edu.sou.cs452.jlox.generated.types.TokenType.*;
+// TODO: remove the following import if commenting it out doesn't cause errors
+// import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 class Environment {
     final Environment enclosing;

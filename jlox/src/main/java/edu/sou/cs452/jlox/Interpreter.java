@@ -3,7 +3,8 @@ package edu.sou.cs452.jlox;
 import edu.sou.cs452.jlox.generated.types.*;
 import java.util.List;
 
-import static edu.sou.cs452.jlox.generated.types.TokenType.*;
+// TODO: remove the following import if commenting it out doesn't cause errors
+// import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 
 public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Object> { // changed this line for lab 4
