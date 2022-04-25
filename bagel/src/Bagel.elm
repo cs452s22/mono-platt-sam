@@ -9,7 +9,7 @@ import Browser
 import Graphql.Http
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
-import Html exposing (Html, Attribute, div, input, button, text, pre)
+import Html exposing (Attribute, Html, button, div, input, pre, text, textarea)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http.Error
@@ -89,7 +89,7 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div []
-        [ input [ value model.code, onInput ChangeText ] [] -- changed from filter to code for lab 3
+        [ textarea [ value model.code, onInput ChangeText ] [] -- changed from filter to code for lab 3
         , div []
             [ button [ onClick Run ] [ text "Get Tokens" ] -- changed from Scan to Run for lab 4
             ]
