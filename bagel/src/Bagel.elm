@@ -117,14 +117,14 @@ viewResponse model =
             -- when the program ahs run and the result is available
             text (String.join " " (List.map addBrackets response)) -- changed this line to make it work
 
-        RemoteData.Failure e ->
-            case e of
+        RemoteData.Failure err ->
+            case err of
                 HttpError NetworkError ->
                     -- Cannot connect to server
                     text ("Http Error: Cannot connect to server")
                 GraphqlError _ errors ->
                     -- Program returns an exception
-                    text ("Graphql Error: " ++ errors)
+                    text ("Graphql Error: " ++ errors.toString)
                 _ ->
                     -- Other, unknown error
                     text ("Error: " ++ Debug.toString)
