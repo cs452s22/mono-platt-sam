@@ -7,16 +7,17 @@ import java.util.List;
 // import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 
-public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Object> { // changed this line for lab 4
+public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void> { // changed this line for lab 4
 
     private Environment environment = new Environment();
 
-    private Object evaluate(Expr expr) {
+    private LiteralValue evaluate(Expr expr) {
         return accept(expr); // changed this line for lab 4
     }
 
-    private Object execute(Stmt stmt) {
-        return accept(stmt); // changed this line for lab 4
+    private Void execute(Stmt stmt) {
+        accept(stmt); // changed this line for lab 4
+        return null;
     }
 
     void executeBlock(List<Stmt> statements, Environment environment) {
@@ -63,43 +64,82 @@ public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Object> { /
     }
 
     @Override
-    public Object visitAssignExpr(Assign expr) {
-        Object value = evaluate(expr.getValue());
+    public LiteralValue visitAssignExpr(Assign expr) {
+        LiteralValue value = evaluate(expr.getValue());
         environment.assign(expr.getName(), value);
         return value;
     }
 
     @Override
-    public Object visitBinaryExpr(Binary expr) {
-        Object left = evaluate(expr.getLeft());
-        Object right = evaluate(expr.getRight()); 
+    public LiteralValue visitBinaryExpr(Binary expr) {
+        LiteralValue left = evaluate(expr.getLeft());
+        LiteralValue right = evaluate(expr.getRight()); 
 
         // TODO: figure out if I need to add code for other cases
         switch (expr.getOperator().getType()) {
             case GREATER:
                 checkNumberOperands(expr.getOperator(), left, right);
-                return (double)left > (double)right;
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) { // we previously assumed left and right were doubles, now we have to confirm this
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+                    return new LiteralBoolean(l.getValue() > r.getValue());
+                } else {
+                    throw new RuntimeError(expr.getOperator(),
+                    "Operands must be two numbers.");
+                }
             case GREATER_EQUAL:
                 checkNumberOperands(expr.getOperator(), left, right);
-                return (double)left >= (double)right;
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+                    return new LiteralBoolean(l.getValue() >= r.getValue());
+                } else {
+                    throw new RuntimeError(expr.getOperator(),
+                    "Operands must be two numbers.");
+                }
             case LESS:
                 checkNumberOperands(expr.getOperator(), left, right);
-                return (double)left < (double)right;
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+                    return new LiteralBoolean(l.getValue() < r.getValue());
+                } else {
+                    throw new RuntimeError(expr.getOperator(),
+                    "Operands must be two numbers.");
+                }
             case LESS_EQUAL:
                 checkNumberOperands(expr.getOperator(), left, right);
-                return (double)left <= (double)right;
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+                    return new LiteralBoolean(l.getValue() <= r.getValue());
+                } else {
+                    throw new RuntimeError(expr.getOperator(),
+                    "Operands must be two numbers.");
+                }
             case MINUS:
                 checkNumberOperands(expr.getOperator(), left, right);
-                return (double)left - (double)right;
-            case PLUS:
-                if (left instanceof Double && right instanceof Double) {
-                  return (double)left + (double)right;
-                } 
-                if (left instanceof String && right instanceof String) {
-                  return (String)left + (String)right;
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+                    return new LiteralFloat(l.getValue() - r.getValue());
+                } else {
+                    throw new RuntimeError(expr.getOperator(),
+                    "Operands must be two numbers.");
                 }
-                throw new RuntimeError(expr.getOperator(),
+            case PLUS:
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+                    return new LiteralFloat(l.getValue() + r.getValue());
+                } else if (left instanceof LiteralString && right instanceof LiteralString) {
+                    LiteralString l = (LiteralString)left; // cast to LiteralString
+                    LiteralString r = (LiteralString)right; // cast to LiteralString
+                    return new LiteralString(l.getValue() + r.getValue());
+                } else {
+                    throw new RuntimeError(expr.getOperator(),
                     "Operands must be two numbers or two strings.");
+                }
             case SLASH:
                 checkNumberOperands(expr.getOperator(), left, right);
                 return (double)left / (double)right;
@@ -117,13 +157,13 @@ public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Object> { /
     }
 
     @Override
-    public Object visitLiteralExpr(Literal expr) {
+    public LiteralValue visitLiteralExpr(Literal expr) {
         return expr.getValue();
     }
 
     @Override
-    public Object visitUnaryExpr(Unary expr) {
-        Object right = evaluate(expr.getRight());
+    public LiteralValue visitUnaryExpr(Unary expr) {
+        LiteralValue right = evaluate(expr.getRight());
 
         // TODO: figure out if I need to add code for other cases
         switch (expr.getOperator().getType()) {
@@ -139,7 +179,7 @@ public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Object> { /
     }
 
     @Override
-    public Object visitVariableExpr(Variable expr) {
+    public LiteralValue visitVariableExpr(Variable expr) {
         return environment.get(expr.getName());
     }
 
@@ -154,7 +194,7 @@ public class Interpreter implements ExprVisitor<Object>, StmtVisitor<Object> { /
     }
 
     @Override
-    public Object visitGroupingExpr(Grouping expr) {
+    public LiteralValue visitGroupingExpr(Grouping expr) {
         return evaluate(expr.getExpression());
     }
 
