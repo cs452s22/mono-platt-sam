@@ -292,8 +292,6 @@ public class Parser {
     
         while (!isAtEnd()) {
             if (previous().getType() == SEMICOLON) return;
-            
-            // TODO: figure out if I need to add code for other cases
             switch (peek().getType()) {
                 case CLASS:
                 case FUN:
@@ -305,7 +303,6 @@ public class Parser {
                 case RETURN:
                     return;
             }
-    
             advance();
         }
     }

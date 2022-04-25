@@ -132,6 +132,7 @@
           <version>1.16</version>
           <executions>
             <execution>
+              <?m2e execute onConfiguration?>
               <goals>
                 <goal>generate</goal>
               </goals>
