@@ -11,6 +11,8 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     private Environment environment = new Environment();
 
+    private String outputString; // to be used by the elm frontend later in lab 4
+
     private LiteralValue evaluate(Expr expr) {
         return accept(expr); // changed this line for lab 4
     }
@@ -49,7 +51,8 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     @Override
     public Void visitPrintStmt(Print stmt) {
         LiteralValue value = evaluate(stmt.getExpression());
-        System.out.println(stringify(value));
+        outputString = stringify(value); // added during lab 4
+        // System.out.println(stringify(value)); // commented out during lab 4
         return null;
     }
 
@@ -264,9 +267,9 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         return evaluate(expr.getExpression());
     }
 
-    private boolean isTruthy(LiteralBoolean object) {
-        if (object == null) { return false; }
-        if (object instanceof LiteralBoolean) { return object.getValue(); }
+    private boolean isTruthy(LiteralBoolean lit) {
+        if (lit == null) { return false; }
+        if (lit instanceof LiteralBoolean) { return lit.getValue(); }
         return true;
     }
 
@@ -277,18 +280,18 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         return a.equals(b);
     }
 
-    private String stringify(LiteralValue object) {
-        if (object == null) return "nil";
+    private String stringify(LiteralValue lit) {
+        if (lit == null) return "nil";
     
-        if (object instanceof LiteralFloat) {
-            String text = object.toString();
+        if (lit instanceof LiteralFloat) {
+            String text = lit.toString();
             if (text.endsWith(".0")) {
                 text = text.substring(0, text.length() - 2);
             }
             return text;
         }
     
-        return object.toString();
+        return lit.toString();
     }
 
     Void interpret(List<Stmt> statements) {
