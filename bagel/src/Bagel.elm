@@ -90,7 +90,7 @@ view model =
     div []
         [ textarea [ value model.code, onInput ChangeText ] [] -- changed from filter to code for lab 3
         , div []
-            [ button [ onClick Run ] [ text "Get Tokens" ] -- changed from Scan to Run for lab 4
+            [ button [ onClick Run ] [ text "Run Interpretor" ] -- changed from Scan to Run for lab 4
             ]
         , div []
             [ viewResponse model.tokens ]
@@ -120,7 +120,7 @@ viewResponse model =
             case err of
                 HttpError NetworkError ->
                     -- Cannot connect to server
-                    text ("Http Error: Cannot connect to server")
+                    text ("Http Error: Network Error")
                 GraphqlError _ errors ->
                     -- Program returns an exception
                     text ("Graphql Error: " ++ Debug.toString errors)
