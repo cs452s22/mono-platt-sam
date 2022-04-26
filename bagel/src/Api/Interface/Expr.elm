@@ -52,7 +52,6 @@ maybeFragments =
     , onGrouping = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     }
 
-
 id : SelectionSet Int Api.Interface.Expr
 id =
     Object.selectionForField "Int" "id" [] Decode.int

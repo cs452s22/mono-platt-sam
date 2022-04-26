@@ -7,7 +7,7 @@ import edu.sou.cs452.jlox.generated.types.*;
 import java.util.List;
 
 @DgsComponent
-public class RunDatafetcher { // TODO: complete this part
+public class RunDatafetcher {
 
     @DgsQuery
     public String run(@InputArgument String code) {

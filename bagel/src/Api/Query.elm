@@ -18,10 +18,12 @@ import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode exposing (Decoder)
 
-
 type alias TokensRequiredArguments =
     { code : String }
 
+-- added during lab 4
+type alias RunRequiredArguments =
+    { code : String }
 
 tokens :
     TokensRequiredArguments
