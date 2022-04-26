@@ -4,6 +4,7 @@
 
 module Api.InputObject exposing (..)
 
+
 placeholder : String
 placeholder =
     ""

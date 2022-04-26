@@ -2,9 +2,8 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.Token exposing (..)
+module Api.Object.Assign exposing (..)
 
-import Api.Enum.TokenType
 import Api.InputObject
 import Api.Interface
 import Api.Object
@@ -20,23 +19,20 @@ import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-type_ : SelectionSet Api.Enum.TokenType.TokenType Api.Object.Token
-type_ =
-    Object.selectionForField "Enum.TokenType.TokenType" "type" [] Api.Enum.TokenType.decoder
+id : SelectionSet Int Api.Object.Assign
+id =
+    Object.selectionForField "Int" "id" [] Decode.int
 
 
-lexeme : SelectionSet String Api.Object.Token
-lexeme =
-    Object.selectionForField "String" "lexeme" [] Decode.string
+name :
+    SelectionSet decodesTo Api.Object.Token
+    -> SelectionSet decodesTo Api.Object.Assign
+name object____ =
+    Object.selectionForCompositeField "name" [] object____ Basics.identity
 
 
-literal :
-    SelectionSet decodesTo Api.Union.LiteralValue
-    -> SelectionSet decodesTo Api.Object.Token
-literal object____ =
-    Object.selectionForCompositeField "literal" [] object____ Basics.identity
-
-
-line : SelectionSet Int Api.Object.Token
-line =
-    Object.selectionForField "Int" "line" [] Decode.int
+value :
+    SelectionSet decodesTo Api.Interface.Expr
+    -> SelectionSet decodesTo Api.Object.Assign
+value object____ =
+    Object.selectionForCompositeField "value" [] object____ Basics.identity

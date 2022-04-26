@@ -20,10 +20,12 @@ import Json.Decode as Decode
 
 
 type alias Fragments decodesTo =
-    { onBinary : SelectionSet decodesTo Api.Object.Binary
-    , onUnary : SelectionSet decodesTo Api.Object.Unary
-    , onLiteral : SelectionSet decodesTo Api.Object.Literal
+    { onAssign : SelectionSet decodesTo Api.Object.Assign
+    , onBinary : SelectionSet decodesTo Api.Object.Binary
     , onGrouping : SelectionSet decodesTo Api.Object.Grouping
+    , onLiteral : SelectionSet decodesTo Api.Object.Literal
+    , onUnary : SelectionSet decodesTo Api.Object.Unary
+    , onVariable : SelectionSet decodesTo Api.Object.Variable
     }
 
 
@@ -34,10 +36,12 @@ fragments :
     -> SelectionSet decodesTo Api.Interface.Expr
 fragments selections____ =
     Object.exhaustiveFragmentSelection
-        [ Object.buildFragment "Binary" selections____.onBinary
-        , Object.buildFragment "Unary" selections____.onUnary
-        , Object.buildFragment "Literal" selections____.onLiteral
+        [ Object.buildFragment "Assign" selections____.onAssign
+        , Object.buildFragment "Binary" selections____.onBinary
         , Object.buildFragment "Grouping" selections____.onGrouping
+        , Object.buildFragment "Literal" selections____.onLiteral
+        , Object.buildFragment "Unary" selections____.onUnary
+        , Object.buildFragment "Variable" selections____.onVariable
         ]
 
 
@@ -46,11 +50,14 @@ update syntax to add `SelectionSet`s for the types you want to handle.
 -}
 maybeFragments : Fragments (Maybe decodesTo)
 maybeFragments =
-    { onBinary = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
-    , onUnary = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
-    , onLiteral = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    { onAssign = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onBinary = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onGrouping = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onLiteral = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onUnary = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onVariable = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     }
+
 
 id : SelectionSet Int Api.Interface.Expr
 id =
