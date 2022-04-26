@@ -6,13 +6,12 @@ import Api.Object exposing (Token)
 import Api.Object.Token as TokenFields
 import Api.Query as Query
 import Browser
-import Graphql.Http
+import Graphql.Http exposing (..)
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
-import Html exposing (Attribute, Html, button, div, input, pre, text, textarea)
+import Html exposing (Html, button, div, text, textarea)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Http.Error
 import RemoteData exposing (RemoteData)
 
 -- Main
@@ -124,7 +123,7 @@ viewResponse model =
                     text ("Http Error: Cannot connect to server")
                 GraphqlError _ errors ->
                     -- Program returns an exception
-                    text ("Graphql Error: " ++ errors.toString) -- might not need the toString part
+                    text ("Graphql Error: " ++ Debug.toString errors)
                 _ ->
                     -- Other, unknown error
-                    text ("Error: " ++ Debug.toString)
+                    text ("Error: " ++ Debug.toString err)
