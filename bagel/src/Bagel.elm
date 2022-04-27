@@ -26,26 +26,18 @@ type alias Token =
     }
 
 type Msg
-    = GotResponse (RemoteData (Graphql.Http.Error Response) Response)
+    = GotResponse (RemoteData (Graphql.Http.Error String) String)
     | ChangeText String
     | Run -- changed from Scan to Run for lab 4
 
 type alias Model =
-    { code : String -- changed from filter to code
+    { code : String -- changed from filter to code for lab 3
     , tokens : RemoteData (Graphql.Http.Error Response) Response
     }
 
-query : Model -> SelectionSet Response RootQuery
+query : Model -> SelectionSet String RootQuery
 query model =
-    Query.tokens { code = model.code } tokenInfoSelection -- changed from filter to code
-
-
-tokenInfoSelection : SelectionSet Token Api.Object.Token
-tokenInfoSelection =
-    SelectionSet.map3 Token
-        TokenFields.type_
-        TokenFields.lexeme
-        TokenFields.line
+    Query.run { code = model.code } -- changed from filter to code for lab 3; changed to Query.run for lab 4
 
 makeRequest : Model -> Cmd Msg
 makeRequest model =
@@ -114,8 +106,8 @@ viewResponse model =
 
         RemoteData.Success response ->
             -- when the program ahs run and the result is available
-            text (String.join " " (List.map addBrackets response)) -- changed this line to make it work
-
+            -- text (String.join " " (List.map addBrackets response)) -- changed this line to make it work
+            text (response)
         RemoteData.Failure err ->
             case err of
                 HttpError NetworkError ->

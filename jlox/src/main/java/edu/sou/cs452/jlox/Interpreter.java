@@ -9,7 +9,7 @@ import java.util.List;
 public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void> { // changed this line for lab 4
 
     private Environment environment = new Environment();
-    private String outputString; // to be used by the elm frontend later in lab 4
+    public String outputString; // to be used by the elm frontend later in lab 4
 
     public String getOutputString() {
         return outputString;
