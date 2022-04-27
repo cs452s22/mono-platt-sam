@@ -6,7 +6,7 @@ module Api.Object.LiteralFloat exposing (..)
 
 import Api.InputObject
 import Api.Interface
-import Api.Object
+import Api.Object exposing (..)
 import Api.Scalar
 import Api.ScalarCodecs
 import Api.Union
