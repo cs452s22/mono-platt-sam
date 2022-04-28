@@ -11,6 +11,19 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     private Environment environment = new Environment();
     public String outputString; // to be used by the elm frontend later in lab 4
 
+    public void generateOutputString(LiteralValue value) {
+        if (value instanceof LiteralBoolean) {
+            outputString = (new Boolean(((LiteralBoolean) value).getValue())).toString();
+        } else if (value instanceof LiteralFloat) {
+            Float f = (new Float(((LiteralFloat) value).getValue()));
+            outputString = f.toString();
+            if (f % 1 == 0) { // if it is a whole number it is an integer
+                outputString = (new Integer(f.intValue())).toString();
+            }
+        } else if (value instanceof LiteralString) {
+            outputString = ((LiteralString) value).getValue();
+        }
+    }
     public String getOutputString() {
         return outputString;
     }
@@ -53,8 +66,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     @Override
     public Void visitPrintStmt(Print stmt) {
         LiteralValue value = evaluate(stmt.getExpression());
-        outputString = stringify(value); // added during lab 4
-        // System.out.println(stringify(value)); // commented out during lab 4
+        generateOutputString(value);
         return null;
     }
 
