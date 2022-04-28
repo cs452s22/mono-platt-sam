@@ -18,11 +18,15 @@ public class RunDatafetcher {
         // get the list of tokens using the scanner
         List<Token> tokens = sc.scanTokens();
 
+        // for (Token t : tokens) { System.out.println(t); }
+
         // create a new parser that will parse the tokens
         Parser parser = new Parser(tokens);
 
         // create a list of statements from the parser
         List<Stmt> stmts = parser.parse();
+
+        for (Stmt s : stmts) { System.out.println(s); }
 
         // create an interpreter
         Interpreter intr = new Interpreter();

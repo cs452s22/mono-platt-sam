@@ -120,7 +120,7 @@ public class Parser {
             error(equals, "Invalid assignment target."); 
         }
         return expr;
-      }
+    }
 
     private Expr equality() {
         Expr expr = comparison();
