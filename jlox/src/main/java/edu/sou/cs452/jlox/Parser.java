@@ -31,8 +31,9 @@ public class Parser {
 
     private Stmt declaration() {
         try {
-            if (match(VAR)) return varDeclaration();
-    
+            if (match(VAR)) {
+                return varDeclaration();
+            }
             return statement();
         } catch (ParseError error) {
             synchronize();
@@ -46,7 +47,6 @@ public class Parser {
         }
         if (match(LEFT_BRACE)) {
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
 
             return new Block(id, block());
         }
@@ -59,7 +59,6 @@ public class Parser {
         consume(SEMICOLON, "Expect ';' after value.");
 
         int id = current; // set id to current id
-        current++; // increment current by 1 for next
 
         return new Print(id, value);
     }
@@ -75,7 +74,6 @@ public class Parser {
         consume(SEMICOLON, "Expect ';' after variable declaration.");
 
         int id = current; // set id to current id
-        current++; // increment current by 1 for next
 
         return new Var(id, name, initializer);
     }
@@ -85,7 +83,6 @@ public class Parser {
         consume(SEMICOLON, "Expect ';' after expression.");
 
         int id = current; // set id to current id
-        current++; // increment current by 1 for next
 
         return new Expression(id, expr);
     }
@@ -103,8 +100,8 @@ public class Parser {
 
     private Expr assignment() {
         Expr expr = equality();
-    
         if (match(EQUAL)) {
+
             Token equals = previous();
             Expr value = assignment();
         
@@ -112,7 +109,6 @@ public class Parser {
                 Token name = ((Variable)expr).getName();
 
                 int id = current; // set id to current id
-                current++; // increment current by 1 for next
 
                 return new Assign(id, name, value);
             }
@@ -129,7 +125,6 @@ public class Parser {
             Token operator = previous();
             Expr right = comparison();
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
             expr = new Binary(id, expr, operator, right);
         }
 
@@ -143,7 +138,6 @@ public class Parser {
             Token operator = previous();
             Expr right = term();
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
 
             expr = new Binary(id, expr, operator, right);
         }
@@ -159,7 +153,6 @@ public class Parser {
             Expr right = factor();
 
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
             
             expr = new Binary(id, expr, operator, right);
         }
@@ -175,7 +168,6 @@ public class Parser {
             Expr right = unary();
 
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
 
             expr = new Binary(id, expr, operator, right);
         }
@@ -189,7 +181,6 @@ public class Parser {
             Expr right = unary();
 
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
 
             return new Unary(id, operator, right);
         }
@@ -200,32 +191,27 @@ public class Parser {
     private Expr primary() {
         if (match(FALSE)) {
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
 
             return new Literal(id, new LiteralBoolean(false));
         }
         if (match(TRUE)) {
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
 
             return new Literal(id, new LiteralBoolean(true));
         }
         if (match(NIL)) {
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
 
             return new Literal(id, null);
         }
         if (match(NUMBER, STRING)) {
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
 
             return new Literal(id, previous().getLiteral());
         }
         
         if (match(IDENTIFIER)) {
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
 
             return new Variable(id, previous());
         }
@@ -235,7 +221,6 @@ public class Parser {
             consume(RIGHT_PAREN, "Expect ')' after expression.");
 
             int id = current; // set id to current id
-            current++; // increment current by 1 for next
             
             return new Grouping(id, expr);
         }
@@ -266,7 +251,7 @@ public class Parser {
     }
 
     private Token advance() {
-        if (!isAtEnd()) current++;
+        if (!isAtEnd()) { current++; }
         return previous();
     }
 

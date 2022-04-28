@@ -214,7 +214,7 @@ class Scanner {
     }
 
     private void addToken(TokenType type) {
-        addToken(type, new LiteralNull()); // changed from null to new LiteralNull()
+        addToken(type, null);
     }
 
     private void addToken(TokenType type, LiteralValue literal) {
