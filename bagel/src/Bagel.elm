@@ -17,7 +17,7 @@ import RemoteData exposing (RemoteData)
 -- Main
 
 type alias Response =
-    List Token
+    String
 
 type alias Token =
     { type_: TokenType
@@ -32,7 +32,7 @@ type Msg
 
 type alias Model =
     { code : String -- changed from filter to code for lab 3
-    , tokens : RemoteData (Graphql.Http.Error Response) Response
+    , tokens : RemoteData (Graphql.Http.Error String) String
     }
 
 query : Model -> SelectionSet String RootQuery
