@@ -1,23 +1,23 @@
 package edu.sou.cs452.jlox;
 
-import edu.sou.cs452.jlox.AbstractLattice.AbstractValue;
+import edu.sou.cs452.jlox.AbstractValue;
 import edu.sou.cs452.jlox.generated.types.*;
 import java.util.HashMap;
 import java.util.List;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
-public class AbstractInterpreter implements ExprVisitor<AbstractLattice>, StmtVisitor<Void> {
+public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisitor<Void> {
 
     final Environment globals = new Environment();
     private Environment environment = globals;
     public String outputString; // to be used by the elm frontend later in lab 4
 
-    Interpreter() {
+    AbstractInterpreter() {
         globals.define("clock", new ClockFunction());
     }
 
-    public void generateOutputString(AbstractLattice value) {
+    public void generateOutputString(AbstractValue value) {
         if (value instanceof LiteralBoolean) {
             outputString = (new Boolean(((LiteralBoolean) value).getValue())).toString();
         } else if (value instanceof LiteralFloat) {
@@ -34,7 +34,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractLattice>, StmtVi
         return outputString;
     }
 
-    private AbstractLattice evaluate(Expr expr) {
+    private AbstractValue evaluate(Expr expr) {
         return accept(expr); // changed this line for lab 4
     }
 
@@ -78,43 +78,43 @@ public class AbstractInterpreter implements ExprVisitor<AbstractLattice>, StmtVi
 
     @Override
     public Void visitPrintStmt(Print stmt) {
-        AbstractLattice value = evaluate(stmt.getExpression());
+        AbstractValue value = evaluate(stmt.getExpression());
         generateOutputString(value);
         return null;
     }
 
     @Override
     public Void visitReturnStmt(Return stmt) {
-        AbstractLattice value = null;
+        AbstractValue value = null;
         if (stmt.getValue() != null) {
             value = evaluate(stmt.getValue());
         }
 
-        throw new ReturnException(value);
+        throw new ReturnException(value.getAbstractValue());
     }
 
     @Override
     public Void visitVarStmt(Var stmt) {
-        AbstractLattice value = null;
+        AbstractValue value = null;
         if (stmt.getInitializer() != null) {
             value = evaluate(stmt.getInitializer());
         }
 
-        environment.define(stmt.getName().getLexeme(), value);
+        environment.define(stmt.getName().getLexeme(), value.getAbstractValue());
         return null;
     }
 
     @Override
-    public AbstractLattice visitAssignExpr(Assign expr) {
-        AbstractLattice value = evaluate(expr.getValue());
-        environment.assign(expr.getName(), value);
+    public AbstractValue visitAssignExpr(Assign expr) {
+        AbstractValue value = evaluate(expr.getValue());
+        environment.assign(expr.getName(), value.getAbstractValue());
         return value;
     }
 
     @Override
-    public AbstractLattice visitBinaryExpr(Binary expr) {
-        AbstractLattice left = evaluate(expr.getLeft());
-        AbstractLattice right = evaluate(expr.getRight()); 
+    public AbstractValue visitBinaryExpr(Binary expr) {
+        AbstractValue left = evaluate(expr.getLeft());
+        AbstractValue right = evaluate(expr.getRight()); 
 
         switch (expr.getOperator().getType()) {
             case GREATER:
@@ -254,12 +254,12 @@ public class AbstractInterpreter implements ExprVisitor<AbstractLattice>, StmtVi
     }
 
     @Override
-    public AbstractLattice visitLiteralExpr(Literal expr) {
+    public AbstractValue visitLiteralExpr(Literal expr) {
         return expr.getValue();
     }
 
     @Override
-    public AbstractLattice visitCallExpr(Call expr) {
+    public AbstractValue visitCallExpr(Call expr) {
         LiteralValue callee = evaluate(expr.getCallee());
 
         List<LiteralValue> arguments = new ArrayList<>();
@@ -277,12 +277,12 @@ public class AbstractInterpreter implements ExprVisitor<AbstractLattice>, StmtVi
     }
 
     @Override
-    public AbstractLattice visitGroupingExpr(Grouping expr) {
+    public AbstractValue visitGroupingExpr(Grouping expr) {
         return evaluate(expr.getExpression());
     }
 
     @Override
-    public AbstractLattice visitUnaryExpr(Unary expr) {
+    public AbstractValue visitUnaryExpr(Unary expr) {
         LiteralValue right = evaluate(expr.getRight());
 
         switch (expr.getOperator().getType()) {
@@ -308,7 +308,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractLattice>, StmtVi
     }
 
     @Override
-    public AbstractLattice visitVariableExpr(Variable expr) {
+    public AbstractValue visitVariableExpr(Variable expr) {
         return environment.get(expr.getName());
     }
 
@@ -366,19 +366,19 @@ public class AbstractInterpreter implements ExprVisitor<AbstractLattice>, StmtVi
         HashMap<AbstractValue, AbstractValue> left;
         // left +
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, AbstractValue.POSITIVE);
-        left.put(AbstractValue.NEGATIVE, AbstractValue.TOP);
-        left.put(AbstractValue.ZERO, AbstractValue.POSITIVE);
-        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
-        left.put(AbstractValue.TOP, AbstractValue.TOP);
-        lookup.put(AbstractValue.POSITIVE, left);
+        left.put(POSITIVE, POSITIVE);
+        left.put(NEGATIVE, TOP);
+        left.put(ZERO, POSITIVE);
+        left.put(BOTTOM, BOTTOM);
+        left.put(TOP, TOP);
+        lookup.put(POSITIVE, left);
     
         // left -
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, AbstractValue.TOP);
-        left.put(AbstractValue.NEGATIVE, AbstractValue.NEGATIVE);
-        left.put(AbstractValue.ZERO, AbstractValue.NEGATIVE);
-        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
+        left.put(POSITIVE, TOP);
+        left.put(NEGATIVE, NEGATIVE);
+        left.put(ZERO, NEGATIVE);
+        left.put(BOTTOM, BOTTOM);
         left.put(AbstractValue.TOP, AbstractValue.TOP);
         lookup.put(AbstractValue.NEGATIVE, left);
     

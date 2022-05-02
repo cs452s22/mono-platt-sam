@@ -4,7 +4,7 @@ import edu.sou.cs452.jlox.generated.types.*;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
-public class AbstractLattice {
+public class AbstractValue {
     enum AbstractValue {
         BOTTOM,
         NEGATIVE,
@@ -13,13 +13,5 @@ public class AbstractLattice {
         ZERO
     }
 
-    private AbstractValue abstr;
-
-    AbstractLattice(AbstractValue abstr) {
-        this.abstr = abstr;
-    }
-
-    public AbstractValue getAbstractValue() {
-        return this.abstr;
-    }
+    private AbstractValue abstractValue;
 }
