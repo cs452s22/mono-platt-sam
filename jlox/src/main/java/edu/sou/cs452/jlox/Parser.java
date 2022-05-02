@@ -16,6 +16,10 @@ public class Parser {
         this.tokens = tokens;
     }
 
+    public int getCurrent() {
+        return current;
+    }
+
     List<Stmt> parse() {
         List<Stmt> statements = new ArrayList<>();
         while (!isAtEnd()) {

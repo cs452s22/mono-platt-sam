@@ -259,9 +259,10 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     public LiteralValue visitCallExpr(Call expr) {
         LiteralValue callee = evaluate(expr.getCallee());
 
-        List<Expr> arguments = new ArrayList<>();
-        for (Expr argument : arguments) { 
-        arguments.add(evaluate(argument));
+        List<LiteralValue> arguments = new ArrayList<>();
+        for (Expr argument : expr.getArguments()) {
+
+            arguments.add(evaluate(argument));
         }
 
         if (!(callee instanceof LoxCallable)) {

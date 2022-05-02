@@ -1,81 +1,414 @@
 package edu.sou.cs452.jlox;
 
+import edu.sou.cs452.jlox.AbstractLattice.AbstractValue;
 import edu.sou.cs452.jlox.generated.types.*;
+import java.util.HashMap;
+import java.util.List;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
-public class AbstractInterpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
+public class AbstractInterpreter implements ExprVisitor<AbstractLattice>, StmtVisitor<Void> {
+
+    final Environment globals = new Environment();
+    private Environment environment = globals;
+    public String outputString; // to be used by the elm frontend later in lab 4
+
+    Interpreter() {
+        globals.define("clock", new ClockFunction());
+    }
+
+    public void generateOutputString(AbstractLattice value) {
+        if (value instanceof LiteralBoolean) {
+            outputString = (new Boolean(((LiteralBoolean) value).getValue())).toString();
+        } else if (value instanceof LiteralFloat) {
+            Float f = (new Float(((LiteralFloat) value).getValue()));
+            outputString = f.toString();
+            if (f % 1 == 0) { // if it is a whole number it is an integer
+                outputString = (new Integer(f.intValue())).toString();
+            }
+        } else if (value instanceof LiteralString) {
+            outputString = ((LiteralString) value).getValue();
+        }
+    }
+    public String getOutputString() {
+        return outputString;
+    }
+
+    private AbstractLattice evaluate(Expr expr) {
+        return accept(expr); // changed this line for lab 4
+    }
+
+    private Void execute(Stmt stmt) {
+        accept(stmt); // changed this line for lab 4
+        return null;
+    }
+
+    Void executeBlock(List<Stmt> statements, Environment environment) {
+        Environment previous = this.environment;
+        try {
+            this.environment = environment;
+
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
+        } finally {
+            this.environment = previous;
+        }
+        return null;
+    }
 
     @Override
     public Void visitBlockStmt(Block stmt) {
-        // TODO Auto-generated method stub
+        executeBlock(stmt.getStatements(), new Environment(environment));
         return null;
     }
 
     @Override
     public Void visitExpressionStmt(Expression stmt) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Void visitPrintStmt(Print stmt) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Void visitVarStmt(Var stmt) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public LiteralValue visitAssignExpr(Assign expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public LiteralValue visitBinaryExpr(Binary expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public LiteralValue visitGroupingExpr(Grouping expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public LiteralValue visitLiteralExpr(Literal expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public LiteralValue visitUnaryExpr(Unary expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public LiteralValue visitVariableExpr(Variable expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public LiteralValue visitCallExpr(Call expr) {
-        // TODO Auto-generated method stub
+        evaluate(stmt.getStatement());
         return null;
     }
 
     @Override
     public Void visitFunctionStmt(Function stmt) {
-        // TODO Auto-generated method stub
+        LoxFunction function = new LoxFunction(stmt, environment);
+        environment.define(stmt.getName().getLexeme(), function);
         return null;
     }
+
+    @Override
+    public Void visitPrintStmt(Print stmt) {
+        AbstractLattice value = evaluate(stmt.getExpression());
+        generateOutputString(value);
+        return null;
+    }
+
+    @Override
+    public Void visitReturnStmt(Return stmt) {
+        AbstractLattice value = null;
+        if (stmt.getValue() != null) {
+            value = evaluate(stmt.getValue());
+        }
+
+        throw new ReturnException(value);
+    }
+
+    @Override
+    public Void visitVarStmt(Var stmt) {
+        AbstractLattice value = null;
+        if (stmt.getInitializer() != null) {
+            value = evaluate(stmt.getInitializer());
+        }
+
+        environment.define(stmt.getName().getLexeme(), value);
+        return null;
+    }
+
+    @Override
+    public AbstractLattice visitAssignExpr(Assign expr) {
+        AbstractLattice value = evaluate(expr.getValue());
+        environment.assign(expr.getName(), value);
+        return value;
+    }
+
+    @Override
+    public AbstractLattice visitBinaryExpr(Binary expr) {
+        AbstractLattice left = evaluate(expr.getLeft());
+        AbstractLattice right = evaluate(expr.getRight()); 
+
+        switch (expr.getOperator().getType()) {
+            case GREATER:
+                checkNumberOperands(expr.getOperator(), left, right);
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) { // we previously assumed left and right were doubles, now we have to confirm this
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+
+                    return new LiteralBoolean(l.getValue() > r.getValue());
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operands must be two numbers.");
+            case GREATER_EQUAL:
+                checkNumberOperands(expr.getOperator(), left, right);
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+
+                    return new LiteralBoolean(l.getValue() >= r.getValue());
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operands must be two numbers.");
+            case LESS:
+                checkNumberOperands(expr.getOperator(), left, right);
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+
+                    return new LiteralBoolean(l.getValue() < r.getValue());
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operands must be two numbers.");
+            case LESS_EQUAL:
+                checkNumberOperands(expr.getOperator(), left, right);
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+                    return new LiteralBoolean(l.getValue() <= r.getValue());
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operands must be two numbers.");
+            case MINUS:
+                checkNumberOperands(expr.getOperator(), left, right);
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+                    return new LiteralFloat(l.getValue() - r.getValue());
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operands must be two numbers.");
+            case PLUS: // TODO: do a function call to plus
+                checkNumberOperands(expr.getOperator(), left, right);
+                // addition
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+                    return new LiteralFloat(l.getValue() + r.getValue());
+                }
+                // concatenation
+                if (left instanceof LiteralString && right instanceof LiteralString) {
+                    LiteralString l = (LiteralString)left; // cast to LiteralString
+                    LiteralString r = (LiteralString)right; // cast to LiteralString
+
+                    return new LiteralString(l.getValue() + r.getValue());
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operands must be two numbers or two strings.");
+            case SLASH:
+                checkNumberOperands(expr.getOperator(), left, right);
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+
+                    return new LiteralFloat(l.getValue() / r.getValue());
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operands must be two numbers or two strings.");
+            case STAR: // multiplication
+                checkNumberOperands(expr.getOperator(), left, right);
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left; // cast to LiteralFloat
+                    LiteralFloat r = (LiteralFloat)right; // cast to LiteralFloat
+
+                    return new LiteralFloat(l.getValue() * r.getValue());
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operands must be two numbers.");
+            case BANG_EQUAL:
+                checkNumberOperands(expr.getOperator(), left, right);
+                if (left instanceof LiteralBoolean && right instanceof LiteralBoolean) {
+                    LiteralBoolean l = (LiteralBoolean)left;
+                    LiteralBoolean r = (LiteralBoolean)right;
+
+                    return new LiteralBoolean(!isEqual(l, r));
+                }
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left;
+                    LiteralFloat r = (LiteralFloat)right;
+
+                    return new LiteralBoolean(!isEqual(l, r));
+                }
+                if (left instanceof LiteralString && right instanceof LiteralString) {
+                    LiteralString l = (LiteralString)left;
+                    LiteralString r = (LiteralString)right;
+
+                    return new LiteralBoolean(!isEqual(l, r));
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operands must be two booleans, two numbers, or two strings.");
+            
+            case EQUAL_EQUAL:
+                checkNumberOperands(expr.getOperator(), left, right);
+                if (left instanceof LiteralBoolean && right instanceof LiteralBoolean) {
+                    LiteralBoolean l = (LiteralBoolean)left;
+                    LiteralBoolean r = (LiteralBoolean)right;
+
+                    return new LiteralBoolean(isEqual(l, r));
+                }
+                if (left instanceof LiteralFloat && right instanceof LiteralFloat) {
+                    LiteralFloat l = (LiteralFloat)left;
+                    LiteralFloat r = (LiteralFloat)right;
+
+                    return new LiteralBoolean(isEqual(l, r));
+                }
+                if (left instanceof LiteralString && right instanceof LiteralString) {
+                    LiteralString l = (LiteralString)left;
+                    LiteralString r = (LiteralString)right;
+
+                    return new LiteralBoolean(isEqual(l, r));
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operands must be two booleans, two numbers, or two strings.");
+            default:
+                throw new RuntimeError(expr.getOperator(), 
+                "The method visitBinary() not implemented for this operator type.");   
+        }
+    }
+
+    @Override
+    public AbstractLattice visitLiteralExpr(Literal expr) {
+        return expr.getValue();
+    }
+
+    @Override
+    public AbstractLattice visitCallExpr(Call expr) {
+        LiteralValue callee = evaluate(expr.getCallee());
+
+        List<LiteralValue> arguments = new ArrayList<>();
+        for (Expr argument : expr.getArguments()) {
+
+            arguments.add(evaluate(argument));
+        }
+
+        if (!(callee instanceof LoxCallable)) {
+            throw new RuntimeError(expr.getParen(), "Can only call functions and classes.");
+        }
+
+        LoxCallable function = (LoxCallable)callee;
+        return function.call(this, arguments);
+    }
+
+    @Override
+    public AbstractLattice visitGroupingExpr(Grouping expr) {
+        return evaluate(expr.getExpression());
+    }
+
+    @Override
+    public AbstractLattice visitUnaryExpr(Unary expr) {
+        LiteralValue right = evaluate(expr.getRight());
+
+        switch (expr.getOperator().getType()) {
+            case BANG:
+                if (right instanceof LiteralBoolean) {
+                    LiteralBoolean r = (LiteralBoolean)right;
+                    return new LiteralBoolean(!isTruthy(r));
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operands must be a boolean.");
+            case MINUS:
+                checkNumberOperand(expr.getOperator(), right);
+                if (right instanceof LiteralFloat) {
+                    LiteralFloat r = (LiteralFloat)right;
+                    return new LiteralFloat(-r.getValue());
+                }
+                throw new RuntimeError(expr.getOperator(),
+                "Operand must be a number.");
+            default:
+                throw new RuntimeError(expr.getOperator(), 
+                "The method visitUnaryExpr() not implemented for this operator type.");   
+        }
+    }
+
+    @Override
+    public AbstractLattice visitVariableExpr(Variable expr) {
+        return environment.get(expr.getName());
+    }
+
+    private Void checkNumberOperand(Token operator, LiteralValue operand) {
+        if (operand instanceof LiteralFloat) { return null; }
+        throw new RuntimeError(operator, "Operand must be a number.");
+    }
+
+    private Void checkNumberOperands(Token operator, LiteralValue left, LiteralValue right) {
+        if (left instanceof LiteralFloat && right instanceof LiteralFloat) { return null; }
+        throw new RuntimeError(operator, "Operands must be numbers.");
+    }
+
+    private boolean isTruthy(LiteralBoolean lit) {
+        if (lit == null) { return false; }
+        if (lit instanceof LiteralBoolean) { return lit.getValue(); }
+        return true;
+    }
+
+    private boolean isEqual(LiteralValue a, LiteralValue b) {
+        if (a == null && b == null) { return true; }
+        if (a == null) { return false; }
     
+        return a.equals(b);
+    }
+
+    private String stringify(LiteralValue lit) {
+        if (lit == null) return "nil";
+    
+        if (lit instanceof LiteralFloat) {
+            String text = lit.toString();
+            if (text.endsWith(".0")) {
+                text = text.substring(0, text.length() - 2);
+            }
+            return text;
+        }
+    
+        return lit.toString();
+    }
+
+    Void interpret(List<Stmt> statements) {
+        try {
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
+        } catch (RuntimeError error) {
+            Lox.runtimeError(error);
+        }
+        return null;
+    }
+
+    public final static AbstractValue plus(AbstractValue leftValue, AbstractValue rightValue) {
+        HashMap<AbstractValue, HashMap<AbstractValue, AbstractValue>> lookup = new HashMap<>();
+    
+        HashMap<AbstractValue, AbstractValue> left;
+        // left +
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, AbstractValue.POSITIVE);
+        left.put(AbstractValue.NEGATIVE, AbstractValue.TOP);
+        left.put(AbstractValue.ZERO, AbstractValue.POSITIVE);
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
+        left.put(AbstractValue.TOP, AbstractValue.TOP);
+        lookup.put(AbstractValue.POSITIVE, left);
+    
+        // left -
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, AbstractValue.TOP);
+        left.put(AbstractValue.NEGATIVE, AbstractValue.NEGATIVE);
+        left.put(AbstractValue.ZERO, AbstractValue.NEGATIVE);
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
+        left.put(AbstractValue.TOP, AbstractValue.TOP);
+        lookup.put(AbstractValue.NEGATIVE, left);
+    
+        // left 0
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, AbstractValue.POSITIVE);
+        left.put(AbstractValue.NEGATIVE, AbstractValue.NEGATIVE);
+        left.put(AbstractValue.ZERO, AbstractValue.ZERO);
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
+        left.put(AbstractValue.TOP, AbstractValue.TOP);
+        lookup.put(AbstractValue.ZERO, left);
+    
+        // left Bottom
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, AbstractValue.BOTTOM);
+        left.put(AbstractValue.NEGATIVE, AbstractValue.BOTTOM);
+        left.put(AbstractValue.ZERO, AbstractValue.BOTTOM);
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
+        left.put(AbstractValue.TOP, AbstractValue.BOTTOM);
+        lookup.put(AbstractValue.BOTTOM, left);
+    
+        // left Top
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, AbstractValue.TOP);
+        left.put(AbstractValue.NEGATIVE, AbstractValue.TOP);
+        left.put(AbstractValue.ZERO, AbstractValue.TOP);
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
+        left.put(AbstractValue.TOP, AbstractValue.TOP);
+        lookup.put(AbstractValue.TOP, left);
+    
+        return lookup.get(leftValue).get(rightValue);
+    }
 }

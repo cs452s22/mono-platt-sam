@@ -4,9 +4,6 @@ import edu.sou.cs452.jlox.generated.types.*;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO: remove the following import if commenting it out doesn't cause errors
-// import static edu.sou.cs452.jlox.generated.types.TokenType.*;
-
 class Environment {
     final Environment enclosing;
     private final Map<String, LiteralValue> values = new HashMap<>();
