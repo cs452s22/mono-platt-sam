@@ -1,10 +1,17 @@
 package edu.sou.cs452.jlox;
 
+import edu.sou.cs452.jlox.generated.types.*;
+import edu.sou.cs452.jlox.generated.types.LiteralFloat;
+import edu.sou.cs452.jlox.generated.types.LiteralString;
+import edu.sou.cs452.jlox.generated.types.LiteralValue;
+import edu.sou.cs452.jlox.generated.types.Token;
+import edu.sou.cs452.jlox.generated.types.TokenType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static edu.sou.cs452.jlox.TokenType.*;
+
+import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 class Scanner {
 
@@ -49,7 +56,7 @@ class Scanner {
             scanToken();
         }
 
-        tokens.add(new Token(EOF, "", null, line));
+        tokens.add(new Token(EOF, "", new LiteralNull(), line)); // changed from null to new LiteralNull()
         return tokens;
     }
 
@@ -86,12 +93,11 @@ class Scanner {
                     }
                 } else if (match('*')) {
                     // a C style block comment that goes from /* until */ is seen or the end is reached
-                    while (peek() != '*' && peekNext() != '/' && !isAtEnd()) {
+                    while (peek() !='*' && peekNext() != '/' && !isAtEnd()) {
                         advance();
+                        // advance();
                     }
-                } else {
-                    addToken(SLASH);
-                }
+                } else addToken(SLASH);
                 break;
             case ' ':
             case '\r':
@@ -142,7 +148,7 @@ class Scanner {
             }
         }
 
-        addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
+        addToken(NUMBER, new LiteralFloat(Double.parseDouble(source.substring(start, current))));
     }
 
     private void string() {
@@ -162,7 +168,7 @@ class Scanner {
         advance();
 
         // trim the surrounding quotations
-        String value = source.substring(start + 1, current - 1);
+        LiteralString value = new LiteralString(source.substring(start + 1, current - 1));
         addToken(STRING, value);
     }
 
@@ -212,10 +218,10 @@ class Scanner {
     }
 
     private void addToken(TokenType type) {
-        addToken(type, null);
+        addToken(type, new LiteralNull()); // changed from null to new LiteralNull()
     }
 
-    private void addToken(TokenType type, Object literal) {
+    private void addToken(TokenType type, LiteralValue literal) {
         String text = source.substring(start, current);
         tokens.add(new Token(type, text, literal, line));
     }

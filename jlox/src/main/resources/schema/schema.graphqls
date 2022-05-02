@@ -1,0 +1,99 @@
+type Query {
+  tokens(code: String!): [Token!]!
+}
+
+enum TokenType {
+  LEFT_PAREN
+  RIGHT_PAREN
+  LEFT_BRACE
+  RIGHT_BRACE,
+  COMMA
+  DOT
+  MINUS
+  PLUS
+  SEMICOLON
+  SLASH
+  STAR
+  BANG
+  BANG_EQUAL
+  EQUAL
+  EQUAL_EQUAL
+  GREATER
+  GREATER_EQUAL
+  LESS
+  LESS_EQUAL
+  IDENTIFIER
+  STRING
+  NUMBER
+  AND
+  CLASS
+  ELSE
+  FALSE
+  FUN
+  FOR
+  IF
+  INCLUDE
+  INPUT
+  NIL
+  OR
+  PRINT
+  RETURN
+  SUPER
+  THIS
+  TRUE
+  VAR
+  WHILE
+  EOF
+}
+
+type Token {
+  type : TokenType!
+  lexeme : String!
+  literal : LiteralValue!
+  line : Int!
+}
+
+union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull
+
+type LiteralString {
+  value : String!
+}
+
+type LiteralFloat {
+  value : Float!
+}
+
+type LiteralBoolean {
+  value : Boolean!
+}
+
+type LiteralNull {
+  value : Boolean!
+}
+
+interface Expr {
+  id : Int!
+}
+
+type Binary implements Expr {
+  id : Int!
+  left : Expr!
+  operator : Token!
+  right : Expr!
+}
+
+type Unary implements Expr {
+  id : Int!
+  operator : Token!
+  right : Expr!
+}
+
+type Literal implements Expr {
+  id : Int!
+  value : LiteralValue!
+}
+
+type Grouping implements Expr {
+  id : Int!
+  expression : Expr!
+}

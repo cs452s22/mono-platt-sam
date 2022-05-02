@@ -1,5 +1,8 @@
 package edu.sou.cs452.jlox;
 
+import edu.sou.cs452.jlox.generated.types.*;
+import edu.sou.cs452.jlox.generated.types.Token;
+import edu.sou.cs452.jlox.generated.types.TokenType;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -48,10 +51,13 @@ public class Lox {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
 
-        // For now, just print the tokens.
-        for (Token token : tokens) {
-            System.out.println(token);
-        }
+        Parser parser = new Parser(tokens);
+        Expr expression = parser.parse();
+
+        // stop if there was a syntax error
+        if (hadError) return;
+
+        System.out.println(expression); // changed this line during lab 3
     }
 
     static void error(int line, String message) {
@@ -62,5 +68,13 @@ public class Lox {
         System.err.println(
             "[line " + line + "] Error" + where + ": " + message);
         hadError = true;
+    }
+
+    static void error(Token token, String message) {
+        if (token.getType() == TokenType.EOF) {
+            report(token.getLine(), " at end", message);
+        } else {
+            report(token.getLine(), " at '" + token.getLexeme() + "'", message);
+        }
     }
 }
