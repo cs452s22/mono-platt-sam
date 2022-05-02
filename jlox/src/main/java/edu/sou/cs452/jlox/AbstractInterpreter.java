@@ -90,7 +90,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
             value = evaluate(stmt.getValue());
         }
 
-        throw new ReturnException(value.getAbstractValue());
+        throw new ReturnException(value);
     }
 
     @Override
@@ -100,14 +100,14 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
             value = evaluate(stmt.getInitializer());
         }
 
-        environment.define(stmt.getName().getLexeme(), value.getAbstractValue());
+        environment.define(stmt.getName().getLexeme(), value);
         return null;
     }
 
     @Override
     public AbstractValue visitAssignExpr(Assign expr) {
         AbstractValue value = evaluate(expr.getValue());
-        environment.assign(expr.getName(), value.getAbstractValue());
+        environment.assign(expr.getName(), value);
         return value;
     }
 

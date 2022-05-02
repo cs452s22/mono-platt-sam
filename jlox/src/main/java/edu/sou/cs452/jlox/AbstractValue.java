@@ -12,6 +12,4 @@ public class AbstractValue {
         TOP,
         ZERO
     }
-
-    private AbstractValue abstractValue;
 }
