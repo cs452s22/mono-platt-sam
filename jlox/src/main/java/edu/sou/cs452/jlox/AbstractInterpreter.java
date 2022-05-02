@@ -1,6 +1,6 @@
 package edu.sou.cs452.jlox;
 
-import edu.sou.cs452.jlox.AbstractValue;
+import edu.sou.cs452.jlox.AbstractInterpreter.*; // Why did I have to do this???
 import edu.sou.cs452.jlox.generated.types.*;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +8,14 @@ import java.util.List;
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisitor<Void> {
+
+    public enum AbstractValue {
+        BOTTOM,
+        NEGATIVE,
+        POSITIVE,
+        TOP,
+        ZERO
+    }
 
     final Environment globals = new Environment();
     private Environment environment = globals;
