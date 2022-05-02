@@ -87,6 +87,12 @@ type Binary implements Expr {
   operator : Token!
   right : Expr!
 }
+type Call implements Expr { # TODO: confirm that this is correct
+  id : Int!
+  callee : Expr!
+  paren : Token!
+  arguments : [Expr!]
+}
 type Grouping implements Expr {
   id : Int!
   expression : Expr!
@@ -116,7 +122,13 @@ type Block implements Stmt {
 }
 type Expression implements Stmt {
   id : Int!
-  expression : Expr!
+  statement : Expr!
+}
+type Function implements Stmt {
+  id : Int!
+  name : Token!
+  params : [Token!]
+  body : [Stmt!]
 }
 type Print implements Stmt {
   id : Int!

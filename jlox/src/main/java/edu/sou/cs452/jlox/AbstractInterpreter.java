@@ -65,5 +65,17 @@ public class AbstractInterpreter implements ExprVisitor<LiteralValue>, StmtVisit
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public LiteralValue visitCallExpr(Call expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitFunctionStmt(Function stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

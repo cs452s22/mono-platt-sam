@@ -5,6 +5,7 @@ import edu.sou.cs452.jlox.generated.types.*;
 public interface ExprVisitor<T> {
     T visitAssignExpr(Assign expr);
     T visitBinaryExpr(Binary expr);
+    T visitCallExpr(Call expr);
     T visitGroupingExpr(Grouping expr);
     T visitLiteralExpr(Literal expr);
     T visitUnaryExpr(Unary expr);
@@ -15,6 +16,8 @@ public interface ExprVisitor<T> {
             return visitAssignExpr((Assign) e);
         } else if (e instanceof Binary) {
             return visitBinaryExpr((Binary) e);
+        } else if (e instanceof Call) {
+            return visitCallExpr((Call) e);
         } else if (e instanceof Grouping) {
             return visitGroupingExpr((Grouping) e);
         } else if (e instanceof Literal) {

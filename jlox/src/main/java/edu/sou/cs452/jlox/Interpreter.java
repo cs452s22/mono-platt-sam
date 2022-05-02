@@ -1,12 +1,29 @@
 package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.generated.types.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void> { // changed this line for lab 4
 
-    private Environment environment = new Environment();
+    final Environment globals = new Environment();
+    private Environment environment = globals;
     public String outputString; // to be used by the elm frontend later in lab 4
+
+    Interpreter() {
+        globals.define("clock", new LoxCallable() {
+            @Override
+            public int arity() { return 0; }
+        
+            @Override
+            public LiteralValue call(Interpreter interpreter, List<Expr> arguments) {
+                return new LiteralFloat((double)System.currentTimeMillis() / 1000.0);
+            }
+        
+            @Override
+            public String toString() { return "<native fn>"; }
+        });
+    }
 
     public void generateOutputString(LiteralValue value) {
         if (value instanceof LiteralBoolean) {
@@ -56,7 +73,14 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public Void visitExpressionStmt(Expression stmt) {
-        evaluate(stmt.getExpression());
+        evaluate(stmt.getStatement());
+        return null;
+    }
+
+    @Override
+    public Void visitFunctionStmt(Function stmt) {
+        LoxFunction function = new LoxFunction(stmt, environment);
+        environment.define(stmt.getName().getLexeme(), function);
         return null;
     }
 
@@ -65,6 +89,16 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         LiteralValue value = evaluate(stmt.getExpression());
         generateOutputString(value);
         return null;
+    }
+
+    @Override
+    public Void visitReturnStmt(Return stmt) {
+        Expr value = null;
+        if (stmt.getValue() != null) {
+            value = evaluate(stmt.getValue());
+        }
+
+        throw new Return(value);
     }
 
     @Override
@@ -233,6 +267,28 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     }
 
     @Override
+    public LiteralValue visitCallExpr(Call expr) {
+        LiteralValue callee = evaluate(expr.getCallee());
+
+        List<Expr> arguments = new ArrayList<>();
+        for (Expr argument : arguments) { 
+        arguments.add(evaluate(argument));
+        }
+
+        if (!(callee instanceof LoxCallable)) {
+            throw new RuntimeError(expr.getParen(), "Can only call functions and classes.");
+        }
+
+        LoxCallable function = (LoxCallable)callee;
+        return function.call(this, arguments);
+    }
+
+    @Override
+    public LiteralValue visitGroupingExpr(Grouping expr) {
+        return evaluate(expr.getExpression());
+    }
+
+    @Override
     public LiteralValue visitUnaryExpr(Unary expr) {
         LiteralValue right = evaluate(expr.getRight());
 
@@ -271,11 +327,6 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     private Void checkNumberOperands(Token operator, LiteralValue left, LiteralValue right) {
         if (left instanceof LiteralFloat && right instanceof LiteralFloat) { return null; }
         throw new RuntimeError(operator, "Operands must be numbers.");
-    }
-
-    @Override
-    public LiteralValue visitGroupingExpr(Grouping expr) {
-        return evaluate(expr.getExpression());
     }
 
     private boolean isTruthy(LiteralBoolean lit) {
