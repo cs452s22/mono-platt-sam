@@ -56,7 +56,7 @@ type Token {
 }
 
 ### Literal Types
-union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull
+union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull | Function
 
 type LiteralBoolean {
   value : Boolean!
@@ -87,11 +87,11 @@ type Binary implements Expr {
   operator : Token!
   right : Expr!
 }
-type Call implements Expr { # TODO: confirm that this is correct
+type Call implements Expr {
   id : Int!
   callee : Expr!
   paren : Token!
-  arguments : [Expr!]
+  arguments : [Expr!]! # two exclamation marks makes this a required argument
 }
 type Grouping implements Expr {
   id : Int!
@@ -133,6 +133,11 @@ type Function implements Stmt {
 type Print implements Stmt {
   id : Int!
   expression : Expr!
+}
+type Return implements Stmt {
+  id : Int!
+  keyword : Token!
+  value : Expr!
 }
 type Var implements Stmt {
   id : Int!

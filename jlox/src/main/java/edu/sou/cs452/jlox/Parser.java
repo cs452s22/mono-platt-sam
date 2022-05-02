@@ -75,9 +75,10 @@ public class Parser {
         if (!check(SEMICOLON)) {
           value = expression();
         }
-    
+
         consume(SEMICOLON, "Expect ';' after return value.");
-        return new Return(value);
+        int id = current;
+        return new Return(id, keyword, value);
     }
 
     private Stmt varDeclaration() {

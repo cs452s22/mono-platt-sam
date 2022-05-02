@@ -5,7 +5,7 @@ import java.util.List;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
-class LoxFunction implements LoxCallable {
+class LoxFunction extends Function implements LoxCallable {
     private final Function declaration;
     private final Environment closure;
 
@@ -25,7 +25,7 @@ class LoxFunction implements LoxCallable {
     }
 
     @Override
-    public Expr call(Interpreter interpreter, List<Expr> arguments) {
+    public LiteralValue call(Interpreter interpreter, List<LiteralValue> arguments) {
         Environment environment = new Environment(closure);
         for (int i = 0; i < declaration.getParams().size(); i++) {
             environment.define(declaration.getParams().get(i).getLexeme(), arguments.get(i));
@@ -33,8 +33,8 @@ class LoxFunction implements LoxCallable {
 
         try {
             interpreter.executeBlock(declaration.getBody(), environment);
-        } catch (Return returnValue) {
-            return returnValue.value;
+        } catch (ReturnException returnValue) {
+            return returnValue.getValue();
         }
         return null;
     }

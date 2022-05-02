@@ -11,18 +11,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     public String outputString; // to be used by the elm frontend later in lab 4
 
     Interpreter() {
-        globals.define("clock", new LoxCallable() {
-            @Override
-            public int arity() { return 0; }
-        
-            @Override
-            public LiteralValue call(Interpreter interpreter, List<Expr> arguments) {
-                return new LiteralFloat((double)System.currentTimeMillis() / 1000.0);
-            }
-        
-            @Override
-            public String toString() { return "<native fn>"; }
-        });
+        globals.define("clock", new ClockFunction());
     }
 
     public void generateOutputString(LiteralValue value) {
@@ -93,13 +82,12 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public Void visitReturnStmt(Return stmt) {
-        Expr value = null;
-        Expr x = stmt.getValue();
+        LiteralValue value = null;
         if (stmt.getValue() != null) {
             value = evaluate(stmt.getValue());
         }
 
-        throw new Return(value);
+        throw new ReturnException(value);
     }
 
     @Override

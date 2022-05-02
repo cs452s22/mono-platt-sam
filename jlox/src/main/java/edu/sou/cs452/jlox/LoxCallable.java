@@ -8,5 +8,5 @@ import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 interface LoxCallable {
     int arity();
 
-    Expr call(Interpreter interpreter, List<Expr> arguments);
+    LiteralValue call(Interpreter interpreter, List<LiteralValue> arguments);
 }
