@@ -94,6 +94,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     @Override
     public Void visitReturnStmt(Return stmt) {
         Expr value = null;
+        Expr x = stmt.getValue();
         if (stmt.getValue() != null) {
             value = evaluate(stmt.getValue());
         }
