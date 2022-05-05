@@ -13,9 +13,9 @@ class RuntimeError extends RuntimeException {
     this.type = null;
   }
 
-public RuntimeError(TokenType type, String message) {
-  super(message);
-  this.token = null;
-  this.type = type;
-}
+  RuntimeError(TokenType type, String message) {
+    super(message);
+    this.token = null;
+    this.type = type;
+  }
 }
