@@ -5,7 +5,7 @@ import edu.sou.cs452.jlox.generated.types.*;
 import java.util.HashMap;
 import java.util.Map;
 
-class AbstractEnvironment {
+class AbstractEnvironment extends Environment {
     final AbstractEnvironment enclosing;
     private final Map<String, AbstractValue> values = new HashMap<>();
 
@@ -15,19 +15,6 @@ class AbstractEnvironment {
     
     AbstractEnvironment(AbstractEnvironment enclosing) {
         this.enclosing = enclosing;
-    }
-
-    AbstractValue get(Token name) {
-        if (values.containsKey(name.getLexeme())) {
-          return values.get(name.getLexeme());
-        }
-
-        if (enclosing != null) {
-            return enclosing.get(name);
-        }
-    
-        throw new RuntimeError(name,
-            "Undefined variable '" + name.getLexeme() + "'.");
     }
 
     void assign(Token name, AbstractValue value) {
@@ -43,9 +30,5 @@ class AbstractEnvironment {
     
         throw new RuntimeError(name,
             "Undefined variable '" + name.getLexeme() + "'.");
-    }
-
-    void define(String name, AbstractValue value) {
-        values.put(name, value);
     }
 }

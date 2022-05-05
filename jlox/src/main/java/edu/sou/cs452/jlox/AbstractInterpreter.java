@@ -2,6 +2,8 @@ package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.AbstractInterpreter.*; // Why did I have to do this???
 import edu.sou.cs452.jlox.generated.types.*;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -76,7 +78,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     @Override
     public Void visitExpressionStmt(Expression stmt) {
-        evaluate(stmt.getStatement());
+        evaluate(stmt.getExpression());
         return null;
     }
 
@@ -239,7 +241,6 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         return null;
     }
 
-    // TODO: confirm that these are correct
     public final static AbstractValue bang(AbstractValue rightValue) {
         HashMap<AbstractValue, AbstractValue> lookup;
 
@@ -247,13 +248,12 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         lookup.put(AbstractValue.POSITIVE, AbstractValue.NEGATIVE); // ! positive
         lookup.put(AbstractValue.NEGATIVE, AbstractValue.POSITIVE); // ! negative
         lookup.put(AbstractValue.ZERO, AbstractValue.ZERO); // ! zero
-        lookup.put(AbstractValue.BOTTOM, AbstractValue.TOP); // ! bottom
-        lookup.put(AbstractValue.TOP, AbstractValue.BOTTOM); // ! top
+        lookup.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // ! bottom
+        lookup.put(AbstractValue.TOP, AbstractValue.TOP); // ! top
 
         return lookup.get(rightValue);
     }
 
-    // TODO: confirm that these are correct
     public final static AbstractValue minus(AbstractValue rightValue) {
         HashMap<AbstractValue, AbstractValue> lookup;
 
@@ -267,7 +267,6 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         return lookup.get(rightValue);
     }
 
-    // TODO: confirm that these are correct
     public final static AbstractValue minus(AbstractValue leftValue, AbstractValue rightValue) {
         HashMap<AbstractValue, HashMap<AbstractValue, AbstractValue>> lookup = new HashMap<>();
     
@@ -305,7 +304,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         left.put(AbstractValue.POSITIVE, AbstractValue.TOP); // top - positive
         left.put(AbstractValue.NEGATIVE, AbstractValue.TOP); // top - negative
         left.put(AbstractValue.ZERO, AbstractValue.TOP); // top - zero
-        left.put(AbstractValue.BOTTOM, AbstractValue.TOP); // top - bottom
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // top - bottom
         left.put(AbstractValue.TOP, AbstractValue.TOP); // top - top
         lookup.put(AbstractValue.TOP, left);
 
@@ -327,53 +326,52 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         HashMap<AbstractValue, AbstractValue> left;
         // left +
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, AbstractValue.POSITIVE);
-        left.put(AbstractValue.NEGATIVE, AbstractValue.TOP);
-        left.put(AbstractValue.ZERO, AbstractValue.POSITIVE);
-        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
-        left.put(AbstractValue.TOP, AbstractValue.TOP);
+        left.put(AbstractValue.POSITIVE, AbstractValue.POSITIVE); // positive + positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.TOP); // positive + negative
+        left.put(AbstractValue.ZERO, AbstractValue.POSITIVE); // positive + zero
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // positive + bottom
+        left.put(AbstractValue.TOP, AbstractValue.TOP); // positive + top
         lookup.put(AbstractValue.POSITIVE, left);
     
         // left -
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, AbstractValue.TOP);
-        left.put(AbstractValue.NEGATIVE, AbstractValue.NEGATIVE);
-        left.put(AbstractValue.ZERO, AbstractValue.NEGATIVE);
-        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
-        left.put(AbstractValue.TOP, AbstractValue.TOP);
+        left.put(AbstractValue.POSITIVE, AbstractValue.TOP); // negative + positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.NEGATIVE); // negative + negative
+        left.put(AbstractValue.ZERO, AbstractValue.NEGATIVE); // negative + zero
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // negative + bottom
+        left.put(AbstractValue.TOP, AbstractValue.TOP); // negative + top
         lookup.put(AbstractValue.NEGATIVE, left);
     
         // left 0
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, AbstractValue.POSITIVE);
-        left.put(AbstractValue.NEGATIVE, AbstractValue.NEGATIVE);
-        left.put(AbstractValue.ZERO, AbstractValue.ZERO);
-        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
-        left.put(AbstractValue.TOP, AbstractValue.TOP);
+        left.put(AbstractValue.POSITIVE, AbstractValue.POSITIVE); // 0 + positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.NEGATIVE); // 0 + negative
+        left.put(AbstractValue.ZERO, AbstractValue.ZERO); // 0 + 0
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // 0 + bottom
+        left.put(AbstractValue.TOP, AbstractValue.TOP); // 0 + top
         lookup.put(AbstractValue.ZERO, left);
     
         // left Bottom
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, AbstractValue.BOTTOM);
-        left.put(AbstractValue.NEGATIVE, AbstractValue.BOTTOM);
-        left.put(AbstractValue.ZERO, AbstractValue.BOTTOM);
-        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
-        left.put(AbstractValue.TOP, AbstractValue.BOTTOM);
+        left.put(AbstractValue.POSITIVE, AbstractValue.BOTTOM); // bottom + positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.BOTTOM); // bottom + negative
+        left.put(AbstractValue.ZERO, AbstractValue.BOTTOM); // bottom + zero
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // bottom + top
+        left.put(AbstractValue.TOP, AbstractValue.BOTTOM); // bottom + bottom
         lookup.put(AbstractValue.BOTTOM, left);
     
         // left Top
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, AbstractValue.TOP);
-        left.put(AbstractValue.NEGATIVE, AbstractValue.TOP);
-        left.put(AbstractValue.ZERO, AbstractValue.TOP);
-        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
-        left.put(AbstractValue.TOP, AbstractValue.TOP);
+        left.put(AbstractValue.POSITIVE, AbstractValue.TOP); // top + positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.TOP); // top + negative
+        left.put(AbstractValue.ZERO, AbstractValue.TOP); // top + 0
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // top + bottom
+        left.put(AbstractValue.TOP, AbstractValue.TOP); // top + top
         lookup.put(AbstractValue.TOP, left);
     
         return lookup.get(leftValue).get(rightValue);
     }
-
-    // TODO: Complete this method
+    
     public final static AbstractValue star(AbstractValue leftValue, AbstractValue rightValue) {
         HashMap<AbstractValue, HashMap<AbstractValue, AbstractValue>> lookup = new HashMap<>();
     
@@ -381,47 +379,47 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
         // left +
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, ); // positive * positive
-        left.put(AbstractValue.NEGATIVE, ); // positive * negative
-        left.put(AbstractValue.ZERO, ); // positive * zero
+        left.put(AbstractValue.POSITIVE, AbstractValue.POSITIVE); // positive * positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.NEGATIVE); // positive * negative
+        left.put(AbstractValue.ZERO, AbstractValue.ZERO); // positive * zero
         left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // positive * bottom
-        left.put(AbstractValue.TOP, ); // positive * top
+        left.put(AbstractValue.TOP, AbstractValue.TOP); // positive * top
         lookup.put(AbstractValue.POSITIVE, left);
 
         // left -
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, ); // negative * positive
-        left.put(AbstractValue.NEGATIVE, ); // negative * negative
-        left.put(AbstractValue.ZERO, ); // negative * zero
+        left.put(AbstractValue.POSITIVE, AbstractValue.NEGATIVE); // negative * positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.NEGATIVE); // negative * negative
+        left.put(AbstractValue.ZERO, AbstractValue.ZERO); // negative * zero
         left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // negative * bottom
-        left.put(AbstractValue.TOP, ); // negative * top
+        left.put(AbstractValue.TOP, AbstractValue.TOP); // negative * top
         lookup.put(AbstractValue.NEGATIVE, left);
 
         // left 0
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, ); // zero * positive
-        left.put(AbstractValue.NEGATIVE, ); // zero * negative
-        left.put(AbstractValue.ZERO, ); // zero * zero
-        left.put(AbstractValue.BOTTOM, ); // zero * bottom
-        left.put(AbstractValue.TOP, ); // zero * top
+        left.put(AbstractValue.POSITIVE, AbstractValue.ZERO); // zero * positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.ZERO); // zero * negative
+        left.put(AbstractValue.ZERO, AbstractValue.ZERO); // zero * zero
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // zero * bottom
+        left.put(AbstractValue.TOP, AbstractValue.ZERO); // zero * top
         lookup.put(AbstractValue.ZERO, left);
 
         // left top
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, ); // top * positive
-        left.put(AbstractValue.NEGATIVE, ); // top * negative
-        left.put(AbstractValue.ZERO, ); // top * zero
-        left.put(AbstractValue.BOTTOM, ); // top * bottom
-        left.put(AbstractValue.TOP, ); // top * top
+        left.put(AbstractValue.POSITIVE, AbstractValue.TOP); // top * positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.TOP); // top * negative
+        left.put(AbstractValue.ZERO, AbstractValue.ZERO); // top * zero
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // top * bottom
+        left.put(AbstractValue.TOP, AbstractValue.TOP); // top * top
         lookup.put(AbstractValue.TOP, left);
 
         // left bottom
         left = new HashMap<>();
-        left.put(AbstractValue.POSITIVE, ); // bottom * 
-        left.put(AbstractValue.NEGATIVE, ); // bottom * 
-        left.put(AbstractValue.ZERO, ); // bottom * 
-        left.put(AbstractValue.BOTTOM, ); // bottom * 
-        left.put(AbstractValue.TOP, ); // bottom * 
+        left.put(AbstractValue.POSITIVE, AbstractValue.BOTTOM); // bottom * positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.BOTTOM); // bottom * negative
+        left.put(AbstractValue.ZERO, AbstractValue.BOTTOM); // bottom * zero
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // bottom * bottom
+        left.put(AbstractValue.TOP, AbstractValue.BOTTOM); // bottom * bottom
         lookup.put(AbstractValue.BOTTOM, left);
 
         return lookup.get(leftValue).get(rightValue);
