@@ -84,9 +84,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     @Override
     public Void visitFunctionStmt(Function stmt) {
-        LoxFunction function = new LoxFunction(stmt, environment);
-        environment.define(stmt.getName().getLexeme(), function);
-        return null;
+        throw new RuntimeException("Abstract Interpretor can't handle function statements.");
     }
 
     @Override
@@ -98,22 +96,12 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     @Override
     public Void visitReturnStmt(Return stmt) {
-        AbstractValue value = null;
-        if (stmt.getValue() != null) {
-            value = evaluate(stmt.getValue());
-        }
-        throw new ReturnException(value);
+        throw new RuntimeException("Abstract Interpretor can't handle return statements.");
     }
 
     @Override
     public Void visitVarStmt(Var stmt) {
-        AbstractValue value = null;
-        if (stmt.getInitializer() != null) {
-            value = evaluate(stmt.getInitializer());
-        }
-
-        environment.define(stmt.getName().getLexeme(), value);
-        return null;
+        throw new RuntimeException("Abstract Interpretor can't handle var statements.");
     }
 
     @Override
@@ -145,25 +133,12 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     @Override
     public AbstractValue visitLiteralExpr(Literal expr) {
-        return expr.getValue();
+        throw new RuntimeException("Abstract Interpretor can't handle literal expressions.");
     }
 
     @Override
     public AbstractValue visitCallExpr(Call expr) {
-        AbstractValue callee = evaluate(expr.getCallee());
-
-        List<AbstractValue> arguments = new ArrayList<>();
-        for (Expr argument : expr.getArguments()) {
-
-            arguments.add(evaluate(argument));
-        }
-
-        if (!(callee instanceof LoxCallable)) {
-            throw new RuntimeError(expr.getParen(), "Can only call functions and classes.");
-        }
-
-        LoxCallable function = (LoxCallable)callee;
-        return function.call(this, arguments);
+        throw new RuntimeException("Abstract Interpretor can't handle call expressions.");
     }
 
     @Override
@@ -178,10 +153,8 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         switch (expr.getOperator().getType()) {
             case BANG:
                 return bang(right);
-                throw new RuntimeError(expr.getOperator(), "Operands must be a boolean.");
             case MINUS:
                 return minus(right);
-                throw new RuntimeError(expr.getOperator(), "Operand must be a number.");
             default:
                 throw new RuntimeError(expr.getOperator(), 
                 "The method visitUnaryExpr() not implemented for this operator type.");   
@@ -190,7 +163,8 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     @Override
     public AbstractValue visitVariableExpr(Variable expr) {
-        return environment.get(expr.getName());
+        throw new RuntimeError(expr.getName(),
+        "The method visitVariableExpr() is not implemented.");
     }
 
     private Void checkNumberOperand(Token operator, LiteralValue operand) {
@@ -371,7 +345,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
     
         return lookup.get(leftValue).get(rightValue);
     }
-    
+
     public final static AbstractValue star(AbstractValue leftValue, AbstractValue rightValue) {
         HashMap<AbstractValue, HashMap<AbstractValue, AbstractValue>> lookup = new HashMap<>();
     
