@@ -246,6 +246,49 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         return null;
     }
 
+    public final static AbstractValue minus(AbstractValue leftValue, AbstractValue rightValue) {
+        HashMap<AbstractValue, HashMap<AbstractValue, AbstractValue>> lookup = new HashMap<>();
+    
+        HashMap<AbstractValue, AbstractValue> left;
+
+        // left +
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, AbstractValue.TOP); // positive - positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.POSITIVE); // positive - negative
+        left.put(AbstractValue.ZERO, AbstractValue.POSITIVE); // positivie - zero
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // positive - bottom
+        left.put(AbstractValue.TOP, AbstractValue.TOP); // positive - top
+        lookup.put(AbstractValue.POSITIVE, left);
+
+        // left -
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, AbstractValue.NEGATIVE); // negative - positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.TOP); // negative - negative
+        left.put(AbstractValue.ZERO, AbstractValue.NEGATIVE); // negative - 0
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // negative - bottom
+        left.put(AbstractValue.TOP, AbstractValue.TOP); // negative - top
+        lookup.put(AbstractValue.NEGATIVE, left);
+
+        // left 0
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, AbstractValue.NEGATIVE); // 0 - positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.POSITIVE); // 0 - negative
+        left.put(AbstractValue.ZERO, AbstractValue.ZERO); // 0 - 0
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM);
+        left.put(AbstractValue.TOP, AbstractValue.TOP);
+        lookup.put(AbstractValue.ZERO, left);
+
+        // left top
+        left = new HashMap<>();
+
+        lookup.put(AbstractValue.TOP, left);
+
+        // left bottom
+        left = new HashMap<>();
+
+        lookup.put(AbstractValue.BOTTOM, left);
+    }
+
     public final static AbstractValue plus(AbstractValue leftValue, AbstractValue rightValue) {
         HashMap<AbstractValue, HashMap<AbstractValue, AbstractValue>> lookup = new HashMap<>();
     
