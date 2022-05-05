@@ -1,6 +1,6 @@
 package edu.sou.cs452.jlox;
 
-import edu.sou.cs452.jlox.AbstractInterpreter.AbstractValue;
+import edu.sou.cs452.jlox.AbstractInterpreter.*;
 import edu.sou.cs452.jlox.generated.types.*;
 import java.util.List;
 
@@ -48,6 +48,8 @@ class LoxFunction extends Function implements LoxCallable {
 
     @Override
     public LiteralValue call(AbstractInterpreter interpreter, List<AbstractValue> arguments) {
+        throw new RuntimeException("Abstract Interpretor can't handle calls for Lox Functions.");
+        /*
         AbstractEnvironment environment = new AbstractEnvironment(abstractClosure);
         for (int i = 0; i < declaration.getParams().size(); i++) {
             environment.define(declaration.getParams().get(i).getLexeme(), arguments.get(i));
@@ -59,5 +61,6 @@ class LoxFunction extends Function implements LoxCallable {
             return returnValue.getLiteralValue();
         }
         return null;
+        */
     }
 }
