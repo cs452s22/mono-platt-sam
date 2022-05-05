@@ -164,6 +164,8 @@ type Function implements Stmt {
 }
 type If implements Stmt {
   id : Int!
+  condition : Expr!
+  thenBranch : Stmt!
 }
 type Print implements Stmt {
   id : Int!
