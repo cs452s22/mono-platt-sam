@@ -75,7 +75,7 @@ public class Lox {
     static void runtimeError(RuntimeError error) {
         System.err.println(error.getMessage() + "\n[line " + error.token.getLine() + "]");
         hadRuntimeError = true;
-      }
+    }
 
     private static void report(int line, String where, String message) {
         System.err.println(

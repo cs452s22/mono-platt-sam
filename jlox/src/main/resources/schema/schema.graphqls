@@ -107,6 +107,12 @@ type Literal implements Expr {
   id : Int!
   value : LiteralValue! # LiteralValue instead of Object
 }
+type Logical implements Expr {
+  id : Int!
+  left : Expr!
+  operator : Token!
+  right : Expr!
+}
 type Set implements Expr {
   id : Int!
   object : Expr!
@@ -180,4 +186,9 @@ type Var implements Stmt {
   id : Int!
   name : Token!
   initializer : Expr!
+}
+type While implements Stmt {
+  id : Int!
+  condition : Expr!
+  body : Stmt!
 }

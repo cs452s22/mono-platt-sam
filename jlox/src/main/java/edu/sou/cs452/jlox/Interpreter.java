@@ -102,6 +102,19 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     }
 
     @Override
+    public Void visitWhileStmt(While stmt) {
+        LiteralValue v = evaluate(stmt.getCondition());
+        if (v instanceof LiteralBoolean) {
+            while (isTruthy((LiteralBoolean)v)) {
+                execute(stmt.getBody());
+            }
+            return null;
+        }
+        throw new RuntimeError(stmt.getCondition(),
+        "Operand's condition must evaluate to a literal boolean.");
+    }
+
+    @Override
     public LiteralValue visitAssignExpr(Assign expr) {
         LiteralValue value = evaluate(expr.getValue());
         environment.assign(expr.getName(), value);
