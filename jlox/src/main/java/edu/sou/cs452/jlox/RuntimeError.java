@@ -1,9 +1,7 @@
 package edu.sou.cs452.jlox;
 
-import edu.sou.cs452.jlox.generated.types.*;
-
-// TODO: remove the following import if commenting it out doesn't cause errors
-// import static edu.sou.cs452.jlox.generated.types.TokenType.*;
+import edu.sou.cs452.jlox.generated.types.Token;
+import edu.sou.cs452.jlox.generated.types.TokenType;
 
 class RuntimeError extends RuntimeException {
   final Token token;
@@ -12,10 +10,12 @@ class RuntimeError extends RuntimeException {
   RuntimeError(Token token, String message) {
     super(message);
     this.token = token;
+    this.type = null;
   }
 
 public RuntimeError(TokenType type, String message) {
   super(message);
+  this.token = null;
   this.type = type;
 }
 }
