@@ -74,6 +74,22 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     }
 
     @Override
+    public Void visitIfStmt(If stmt) {
+        LiteralValue v = evaluate(stmt.getCondition());
+        if (v instanceof LiteralBoolean) {
+            if (isTruthy((LiteralBoolean)v)) {
+                execute(stmt.getThenBranch());
+            } else if (stmt.getElseBranch() != null) {
+                execute(stmt.getElseBranch());
+            }
+            return null;
+        }
+        // Error handling
+        throw new RuntimeError(stmt.getCondition(),
+        "Operand's condition must evaluate to a literal boolean.");
+    }
+
+    @Override
     public Void visitPrintStmt(Print stmt) {
         LiteralValue value = evaluate(stmt.getExpression());
         generateOutputString(value);
@@ -110,6 +126,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
             }
             return null;
         }
+        // Error handling
         throw new RuntimeError(stmt.getCondition(),
         "Operand's condition must evaluate to a literal boolean.");
     }
