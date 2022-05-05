@@ -62,7 +62,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public Void visitExpressionStmt(Expression stmt) {
-        evaluate(stmt.getStatement());
+        evaluate(stmt.getExpression());
         return null;
     }
 

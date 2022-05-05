@@ -7,9 +7,15 @@ import edu.sou.cs452.jlox.generated.types.*;
 
 class RuntimeError extends RuntimeException {
   final Token token;
+  final TokenType type;
 
   RuntimeError(Token token, String message) {
     super(message);
     this.token = token;
   }
+
+public RuntimeError(TokenType type, String message) {
+  super(message);
+  this.type = type;
+}
 }

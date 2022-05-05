@@ -94,13 +94,33 @@ type Call implements Expr {
   paren : Token!
   arguments : [Expr!]! # two exclamation marks makes this a required argument
 }
+type Get implements Expr {
+  id : Int!
+  object : Expr!
+  name : Token!
+}
 type Grouping implements Expr {
   id : Int!
   expression : Expr!
 }
 type Literal implements Expr {
   id : Int!
-  value : LiteralValue!
+  value : LiteralValue! # LiteralValue instead of Object
+}
+type Set implements Expr {
+  id : Int!
+  object : Expr!
+  name : Token!
+  value : Expr!
+}
+type Super implements Expr { # the super expression itself contains only the token for the super keyword and the name of the method being looked up
+  id : Int!
+  keyword : Token!
+  method : Token!
+}
+type This implements Expr {
+  id : Int!
+  keyword : Token!
 }
 type Unary implements Expr {
   id : Int!
@@ -121,9 +141,15 @@ type Block implements Stmt {
   id : Int!
   statements : [Stmt!]
 }
+type Class implements Stmt {
+  id : Int!
+  name : Token!
+  superclass : Variable!
+  methods : [Function!]
+}
 type Expression implements Stmt {
   id : Int!
-  statement : Expr!
+  expression : Expr!
 }
 type Function implements Stmt {
   id : Int!

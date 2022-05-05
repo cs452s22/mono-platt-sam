@@ -254,9 +254,7 @@ public class Parser {
         while (true) { 
           if (match(LEFT_PAREN)) {
             expr = finishCall(expr);
-          } else {
-            break;
-          }
+          } else { break; }
         }
     
         return expr;
