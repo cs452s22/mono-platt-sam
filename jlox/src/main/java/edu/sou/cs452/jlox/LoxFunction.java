@@ -32,7 +32,7 @@ class LoxFunction extends Function implements LoxCallable {
         try {
             interpreter.executeBlock(declaration.getBody(), environment);
         } catch (ReturnException returnValue) {
-            return returnValue.getValue();
+            return returnValue.getLiteralValue();
         }
         return null;
     }

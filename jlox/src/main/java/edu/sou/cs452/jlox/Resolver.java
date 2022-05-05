@@ -76,4 +76,70 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
         define(stmt.getName());
         return null;
     }
+
+    @Override
+    public Void visitExpressionStmt(Expression stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitFunctionStmt(Function stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Print stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitReturnStmt(Return stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitAssignExpr(Assign expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitBinaryExpr(Binary expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitCallExpr(Call expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitGroupingExpr(Grouping expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitLiteralExpr(Literal expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitUnaryExpr(Unary expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitVariableExpr(Variable expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

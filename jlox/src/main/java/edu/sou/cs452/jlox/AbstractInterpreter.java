@@ -17,8 +17,8 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         ZERO
     }
 
-    final Environment globals = new Environment();
-    private Environment environment = globals;
+    final AbstractEnvironment globals = new AbstractEnvironment();
+    private AbstractEnvironment environment = globals;
     public String outputString; // to be used by the elm frontend later in lab 4
 
     AbstractInterpreter() {
@@ -27,6 +27,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     // TODO: update this function
     public void generateOutputString(AbstractValue value) {
+        /*
         if (value instanceof LiteralBoolean) {
             outputString = (new Boolean(((LiteralBoolean) value).getValue())).toString();
         } else if (value instanceof LiteralFloat) {
@@ -38,6 +39,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         } else if (value instanceof LiteralString) {
             outputString = ((LiteralString) value).getValue();
         }
+        */
     }
     public String getOutputString() {
         return outputString;
@@ -52,8 +54,8 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         return null;
     }
 
-    Void executeBlock(List<Stmt> statements, Environment environment) {
-        Environment previous = this.environment;
+    Void executeBlock(List<Stmt> statements, AbstractEnvironment environment) {
+        AbstractEnvironment previous = this.environment;
         try {
             this.environment = environment;
 
@@ -68,7 +70,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     @Override
     public Void visitBlockStmt(Block stmt) {
-        executeBlock(stmt.getStatements(), new Environment(environment));
+        executeBlock(stmt.getStatements(), new AbstractEnvironment(environment));
         return null;
     }
 
@@ -98,7 +100,6 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         if (stmt.getValue() != null) {
             value = evaluate(stmt.getValue());
         }
-
         throw new ReturnException(value);
     }
 
@@ -128,20 +129,12 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         switch (expr.getOperator().getType()) {
             case MINUS:
                 return minus(left, right);
-                throw new RuntimeError(expr.getOperator(),
-                "Operands must be two numbers.");
             case PLUS:
                 return plus(left, right);
-                throw new RuntimeError(expr.getOperator(),
-                "Operands must be two numbers or two strings.");
             case SLASH:
                 return minus(left, right);
-                throw new RuntimeError(expr.getOperator(),
-                "Operands must be two numbers or two strings.");
             case STAR: // multiplication
                 return star(left, right);
-                throw new RuntimeError(expr.getOperator(),
-                "Operands must be two numbers.");
             default:
                 throw new RuntimeError(expr.getOperator(), 
                 "The method visitBinary() not implemented for this operator type.");   
@@ -155,9 +148,9 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     @Override
     public AbstractValue visitCallExpr(Call expr) {
-        LiteralValue callee = evaluate(expr.getCallee());
+        AbstractValue callee = evaluate(expr.getCallee());
 
-        List<LiteralValue> arguments = new ArrayList<>();
+        List<AbstractValue> arguments = new ArrayList<>();
         for (Expr argument : expr.getArguments()) {
 
             arguments.add(evaluate(argument));
@@ -246,6 +239,35 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         return null;
     }
 
+    // TODO: confirm that these are correct
+    public final static AbstractValue bang(AbstractValue rightValue) {
+        HashMap<AbstractValue, AbstractValue> lookup;
+
+        lookup = new HashMap<>();
+        lookup.put(AbstractValue.POSITIVE, AbstractValue.NEGATIVE); // ! positive
+        lookup.put(AbstractValue.NEGATIVE, AbstractValue.POSITIVE); // ! negative
+        lookup.put(AbstractValue.ZERO, AbstractValue.ZERO); // ! zero
+        lookup.put(AbstractValue.BOTTOM, AbstractValue.TOP); // ! bottom
+        lookup.put(AbstractValue.TOP, AbstractValue.BOTTOM); // ! top
+
+        return lookup.get(rightValue);
+    }
+
+    // TODO: confirm that these are correct
+    public final static AbstractValue minus(AbstractValue rightValue) {
+        HashMap<AbstractValue, AbstractValue> lookup;
+
+        lookup = new HashMap<>();
+        lookup.put(AbstractValue.POSITIVE, AbstractValue.NEGATIVE); // - positive
+        lookup.put(AbstractValue.NEGATIVE, AbstractValue.POSITIVE); // - negative
+        lookup.put(AbstractValue.ZERO, AbstractValue.ZERO); // - zero
+        lookup.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // - bottom
+        lookup.put(AbstractValue.TOP, AbstractValue.TOP); // - top
+
+        return lookup.get(rightValue);
+    }
+
+    // TODO: confirm that these are correct
     public final static AbstractValue minus(AbstractValue leftValue, AbstractValue rightValue) {
         HashMap<AbstractValue, HashMap<AbstractValue, AbstractValue>> lookup = new HashMap<>();
     
@@ -280,13 +302,23 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
         // left top
         left = new HashMap<>();
-
+        left.put(AbstractValue.POSITIVE, AbstractValue.TOP); // top - positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.TOP); // top - negative
+        left.put(AbstractValue.ZERO, AbstractValue.TOP); // top - zero
+        left.put(AbstractValue.BOTTOM, AbstractValue.TOP); // top - bottom
+        left.put(AbstractValue.TOP, AbstractValue.TOP); // top - top
         lookup.put(AbstractValue.TOP, left);
 
         // left bottom
         left = new HashMap<>();
-
+        left.put(AbstractValue.POSITIVE, AbstractValue.BOTTOM); // bottom - positive
+        left.put(AbstractValue.NEGATIVE, AbstractValue.BOTTOM); // bottom - negative
+        left.put(AbstractValue.ZERO, AbstractValue.BOTTOM); // bottom - zero
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // bottom - bottom
+        left.put(AbstractValue.TOP, AbstractValue.BOTTOM); // bottom - top
         lookup.put(AbstractValue.BOTTOM, left);
+        
+        return lookup.get(leftValue).get(rightValue);
     }
 
     public final static AbstractValue plus(AbstractValue leftValue, AbstractValue rightValue) {
@@ -338,6 +370,60 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         left.put(AbstractValue.TOP, AbstractValue.TOP);
         lookup.put(AbstractValue.TOP, left);
     
+        return lookup.get(leftValue).get(rightValue);
+    }
+
+    // TODO: Complete this method
+    public final static AbstractValue star(AbstractValue leftValue, AbstractValue rightValue) {
+        HashMap<AbstractValue, HashMap<AbstractValue, AbstractValue>> lookup = new HashMap<>();
+    
+        HashMap<AbstractValue, AbstractValue> left;
+
+        // left +
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, ); // positive * positive
+        left.put(AbstractValue.NEGATIVE, ); // positive * negative
+        left.put(AbstractValue.ZERO, ); // positive * zero
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // positive * bottom
+        left.put(AbstractValue.TOP, ); // positive * top
+        lookup.put(AbstractValue.POSITIVE, left);
+
+        // left -
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, ); // negative * positive
+        left.put(AbstractValue.NEGATIVE, ); // negative * negative
+        left.put(AbstractValue.ZERO, ); // negative * zero
+        left.put(AbstractValue.BOTTOM, AbstractValue.BOTTOM); // negative * bottom
+        left.put(AbstractValue.TOP, ); // negative * top
+        lookup.put(AbstractValue.NEGATIVE, left);
+
+        // left 0
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, ); // zero * positive
+        left.put(AbstractValue.NEGATIVE, ); // zero * negative
+        left.put(AbstractValue.ZERO, ); // zero * zero
+        left.put(AbstractValue.BOTTOM, ); // zero * bottom
+        left.put(AbstractValue.TOP, ); // zero * top
+        lookup.put(AbstractValue.ZERO, left);
+
+        // left top
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, ); // top * positive
+        left.put(AbstractValue.NEGATIVE, ); // top * negative
+        left.put(AbstractValue.ZERO, ); // top * zero
+        left.put(AbstractValue.BOTTOM, ); // top * bottom
+        left.put(AbstractValue.TOP, ); // top * top
+        lookup.put(AbstractValue.TOP, left);
+
+        // left bottom
+        left = new HashMap<>();
+        left.put(AbstractValue.POSITIVE, ); // bottom * 
+        left.put(AbstractValue.NEGATIVE, ); // bottom * 
+        left.put(AbstractValue.ZERO, ); // bottom * 
+        left.put(AbstractValue.BOTTOM, ); // bottom * 
+        left.put(AbstractValue.TOP, ); // bottom * 
+        lookup.put(AbstractValue.BOTTOM, left);
+
         return lookup.get(leftValue).get(rightValue);
     }
 }
