@@ -151,11 +151,19 @@ type Expression implements Stmt {
   id : Int!
   expression : Expr!
 }
+type For implements Stmt {
+  id : Int!
+  condition : Expr!
+  
+}
 type Function implements Stmt {
   id : Int!
   name : Token!
   params : [Token!]
   body : [Stmt!]
+}
+type If implements Stmt {
+  id : Int!
 }
 type Print implements Stmt {
   id : Int!

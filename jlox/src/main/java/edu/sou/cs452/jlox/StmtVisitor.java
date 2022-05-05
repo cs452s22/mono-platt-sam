@@ -8,6 +8,7 @@ public interface StmtVisitor<T> {
     T visitBlockStmt(Block stmt);
     T visitExpressionStmt(Expression stmt);
     T visitFunctionStmt(Function stmt);
+    T visitIfStmt(If stmt);
     T visitPrintStmt(Print stmt);
     T visitReturnStmt(Return stmt);
     T visitVarStmt(Var stmt);
