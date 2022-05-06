@@ -32,19 +32,6 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     // TODO: update this function
     public void generateOutputString(AbstractValue value) {
-        /*
-        if (value instanceof LiteralBoolean) {
-            outputString = (new Boolean(((LiteralBoolean) value).getValue())).toString();
-        } else if (value instanceof LiteralFloat) {
-            Float f = (new Float(((LiteralFloat) value).getValue()));
-            outputString = f.toString();
-            if (f % 1 == 0) { // if it is a whole number it is an integer
-                outputString = (new Integer(f.intValue())).toString();
-            }
-        } else if (value instanceof LiteralString) {
-            outputString = ((LiteralString) value).getValue();
-        }
-        */
     }
     public String getOutputString() {
         return outputString;
@@ -115,30 +102,58 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         Set<String> thenKeys = thenMap.keySet();
         Set<String> elseKeys = elseMap.keySet();
 
-        for (String thenKey : thenKeys) {
-            for (String elseKey : elseKeys) {
-                if (thenKey.equals(elseKey)) {
+        for (String thenKey : thenKeys) { // for each then key
+            for (String elseKey : elseKeys) { // for each else key
+                if (thenKey.equals(elseKey)) { // if the keys are the same
                     AbstractValue thenValue = thenMap.get(thenKey);
                     AbstractValue elseValue = elseMap.get(elseKey);
                     AbstractValue unionValue;
 
-                    /* 
-                     * compare the values of the keys (top/positive/zero/negative/bottom) 
-                     * to get the union as an AbstractValue
-                     */
-                    if (thenValue == AbstractValue.BOTTOM) {
+                    /* compare the values of the keys (top/positive/zero/negative/bottom) 
+                     * to get the union as an AbstractValue */
+                    if (thenValue == AbstractValue.BOTTOM) { // bottom union ???
                         unionValue = AbstractValue.BOTTOM;
+                    
+                    } else if (thenValue == AbstractValue.POSITIVE) { // positive union ???
+                        if (elseValue == AbstractValue.POSITIVE) { // positive union positive
+                            unionValue = AbstractValue.POSITIVE;     
+                        } else if (elseValue == AbstractValue.NEGATIVE ) { // positive union negative
+                            unionValue = AbstractValue.TOP;
+                        } else if (elseValue == AbstractValue.ZERO) { // positive union zero
+                            unionValue = AbstractValue.TOP;
+                        } else if (elseValue == AbstractValue.TOP) { // positive union top
+                            unionValue = AbstractValue.TOP;
+                        } else if (elseValue == AbstractValue.BOTTOM) { // positive union bottom
+                            unionValue = AbstractValue.BOTTOM;
+                        }
+                    } else if (thenValue == AbstractValue.ZERO) { // zero union ???
+                        if (elseValue == AbstractValue.BOTTOM) { // zero union bottom
+                            unionValue = AbstractValue.BOTTOM;
+                        } else if (elseValue == AbstractValue.ZERO) { // zero union zero
+                            unionValue = AbstractValue.ZERO;
+                        } else {
+                            unionValue = AbstractValue.TOP;
+                        }
 
-                        //TODO: overwrite the resulting AbstractValue to the original environment's hashmap
-                    } else if (thenValue == AbstractValue.POSITIVE) {
-                        //TODO: logic for this part
-                    } else if (thenValue == AbstractValue.ZERO) {
-                        //TODO: logic for this part
-                    } else if (thenValue == AbstractValue.NEGATIVE) {
-                        //TODO: logic for this part
-                    } else if (thenValue == AbstractValue.TOP) {
-                        //TODO: logic for this part
+                    } else if (thenValue == AbstractValue.NEGATIVE) { // negative union ???
+                        if (elseValue == AbstractValue.NEGATIVE) { // negative union negative
+                            unionValue = AbstractValue.NEGATIVE;
+                        } else if (elseValue == AbstractValue.BOTTOM) { // negative union bottom
+                            unionValue = AbstractValue.BOTTOM;
+                        } else {
+                            unionValue = AbstractValue.TOP;
+                        }
+
+                    } else if (thenValue == AbstractValue.TOP) { // top union ???
+                        if (elseValue == AbstractValue.BOTTOM) { // top union bottom
+                            unionValue = AbstractValue.BOTTOM;
+                        } else {
+                            unionValue = AbstractValue.TOP;
+                        }
                     }
+                    
+                    // push to the new hashmap
+
                 }
             }
         }
