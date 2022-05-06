@@ -1,6 +1,8 @@
 package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.generated.types.*;
+import edu.sou.cs452.jlox.generated.types.Class;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -384,6 +386,18 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         } catch (RuntimeError error) {
             Lox.runtimeError(error);
         }
+        return null;
+    }
+
+    @Override
+    public Void visitClassStmt(Class stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitForStmt(For stmt) {
+        // TODO Auto-generated method stub
         return null;
     }
 }

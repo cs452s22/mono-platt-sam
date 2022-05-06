@@ -7,7 +7,7 @@ import java.util.Map;
 
 class AbstractEnvironment extends Environment {
     final AbstractEnvironment enclosing;
-    private final Map<String, AbstractValue> values = new HashMap<>();
+    final Map<String, AbstractValue> values = new HashMap<>();
 
     AbstractEnvironment() {
         enclosing = null;
@@ -15,6 +15,12 @@ class AbstractEnvironment extends Environment {
     
     AbstractEnvironment(AbstractEnvironment enclosing) {
         this.enclosing = enclosing;
+    }
+
+    public AbstractEnvironment cloneAbstractEnvironment() {
+        AbstractEnvironment e = new AbstractEnvironment();
+        e.values.putAll(this.values);
+        return e;
     }
 
     void assign(Token name, AbstractValue value) {

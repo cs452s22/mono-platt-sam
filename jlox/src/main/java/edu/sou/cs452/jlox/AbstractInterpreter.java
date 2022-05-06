@@ -2,10 +2,13 @@ package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.AbstractInterpreter.*; // Why did I have to do this???
 import edu.sou.cs452.jlox.generated.types.*;
+import edu.sou.cs452.jlox.generated.types.Class;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
@@ -85,6 +88,67 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
     @Override
     public Void visitFunctionStmt(Function stmt) {
         throw new RuntimeException("Abstract Interpretor can't handle function statements.");
+    }
+
+    @Override
+    public Void visitIfStmt(If stmt) {
+        AbstractValue v = evaluate(stmt.getCondition());
+
+        AbstractEnvironment thenEnvironment = environment.cloneAbstractEnvironment();
+        AbstractEnvironment elseEnvironment = environment.cloneAbstractEnvironment();
+        AbstractEnvironment currentEnvironment;
+
+        AbstractValue thenBranchValue = evaluate(stmt.getCondition()); // evaluate the then branch
+        currentEnvironment = thenEnvironment; // set the environment to the "then branch" environment
+        execute(stmt.getThenBranch());
+
+        AbstractValue elseBranchValue = evaluate(stmt.getCondition()); // evaluate the else branch
+        currentEnvironment = elseEnvironment; // set the environment to the "else branch" environment
+        execute(stmt.getElseBranch());
+
+        // join the maps of values based on their keys, then do the top/bottom/negative/zero/join thing
+        HashMap<String, AbstractValue> thenMap = new HashMap<String, AbstractValue>();
+        HashMap<String, AbstractValue> elseMap = new HashMap<String, AbstractValue>();
+        thenMap.putAll(thenEnvironment.values);
+        elseMap.putAll(elseEnvironment.values);
+
+        Set<String> thenKeys = thenMap.keySet();
+        Set<String> elseKeys = elseMap.keySet();
+
+        for (String thenKey : thenKeys) {
+            for (String elseKey : elseKeys) {
+                if (thenKey.equals(elseKey)) {
+                    AbstractValue thenValue = thenMap.get(thenKey);
+                    AbstractValue elseValue = elseMap.get(elseKey);
+                    AbstractValue unionValue;
+
+                    /* 
+                     * compare the values of the keys (top/positive/zero/negative/bottom) 
+                     * to get the union as an AbstractValue
+                     */
+                    if (thenValue == AbstractValue.BOTTOM) {
+                        unionValue = AbstractValue.BOTTOM;
+
+                        //TODO: overwrite the resulting AbstractValue to the original environment's hashmap
+                    } else if (thenValue == AbstractValue.POSITIVE) {
+                        //TODO: logic for this part
+                    } else if (thenValue == AbstractValue.ZERO) {
+                        //TODO: logic for this part
+                    } else if (thenValue == AbstractValue.NEGATIVE) {
+                        //TODO: logic for this part
+                    } else if (thenValue == AbstractValue.TOP) {
+                        //TODO: logic for this part
+                    }
+                }
+            }
+        }
+        
+
+
+
+        // Error handling
+        throw new RuntimeError(stmt.getCondition(),
+        "Operand's condition must evaluate to a literal boolean.");
     }
 
     @Override

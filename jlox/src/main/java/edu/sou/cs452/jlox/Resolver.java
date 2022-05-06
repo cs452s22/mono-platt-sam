@@ -1,6 +1,8 @@
 package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.generated.types.*;
+import edu.sou.cs452.jlox.generated.types.Class;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +10,7 @@ import java.util.Stack;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
-public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
+public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
     private final Interpreter interpreter;
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
 
@@ -64,6 +66,13 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
         beginScope();
         resolve(stmt.getStatements());
         endScope();
+        return null;
+    }
+
+    @Override
+    public Void visitClassStmt(Class stmt) {
+        declare(stmt.name);
+        define(stmt.name);
         return null;
     }
 
@@ -139,6 +148,66 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
 
     @Override
     public Void visitVariableExpr(Variable expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitForStmt(For stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitIfStmt(If stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitWhileStmt(While stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public LiteralValue visitAssignExpr(Assign expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public LiteralValue visitBinaryExpr(Binary expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public LiteralValue visitCallExpr(Call expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public LiteralValue visitGroupingExpr(Grouping expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public LiteralValue visitLiteralExpr(Literal expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public LiteralValue visitUnaryExpr(Unary expr) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public LiteralValue visitVariableExpr(Variable expr) {
         // TODO Auto-generated method stub
         return null;
     }
