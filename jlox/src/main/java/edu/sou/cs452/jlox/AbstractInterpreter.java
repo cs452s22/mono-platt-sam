@@ -24,7 +24,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     final AbstractEnvironment globals = new AbstractEnvironment();
     private AbstractEnvironment environment = globals;
-    public String outputString; // to be used by the elm frontend later in lab 4
+    public String outputString; // to be used by the elm frontend later in lab 4 (and 5)
 
     AbstractInterpreter() {
         globals.define("clock", new ClockFunction());
@@ -107,7 +107,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
                 if (thenKey.equals(elseKey)) { // if the keys are the same
                     AbstractValue thenValue = thenMap.get(thenKey);
                     AbstractValue elseValue = elseMap.get(elseKey);
-                    AbstractValue unionValue;
+                    AbstractValue unionValue = null;
 
                     /* compare the values of the keys (top/positive/zero/negative/bottom) 
                      * to get the union as an AbstractValue */
@@ -152,8 +152,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
                         }
                     }
                     
-                    // push to the new hashmap
-
+                    outputString += unionValue.toString();
                 }
             }
         }
