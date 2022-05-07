@@ -25,12 +25,14 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
         }
     }
 
+    // TODO: fix this
     private void resolve(Stmt stmt) {
-        stmt.accept(this);
+        // stmt.accept(this);
     }
 
+    // TODO: fix this
     private void resolve(Expr expr) {
-        expr.accept(this);
+        // expr.accept(this);
     }
 
     // create a new block scope
@@ -53,10 +55,11 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
         scopes.peek().put(name.getLexeme(), true);
     }
 
+    // TODO: Fix this
     // resolve the variable itself using a helper
     private void resolveLocal(Expr expr, Token name) {
         for (int i = scopes.size() - 1; i >= 0; i--) {
-            interpreter.resolve(expr, scopes.size() - 1 - i);
+            // interpreter.resolve(expr, scopes.size() - 1 - i);
             return;
         }
     }
@@ -71,8 +74,8 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
 
     @Override
     public Void visitClassStmt(Class stmt) {
-        declare(stmt.name);
-        define(stmt.name);
+        declare(stmt.getName());
+        define(stmt.getName());
         return null;
     }
 
@@ -106,48 +109,6 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
 
     @Override
     public Void visitReturnStmt(Return stmt) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Void visitAssignExpr(Assign expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Void visitBinaryExpr(Binary expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Void visitCallExpr(Call expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Void visitGroupingExpr(Grouping expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Void visitLiteralExpr(Literal expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Void visitUnaryExpr(Unary expr) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Void visitVariableExpr(Variable expr) {
         // TODO Auto-generated method stub
         return null;
     }

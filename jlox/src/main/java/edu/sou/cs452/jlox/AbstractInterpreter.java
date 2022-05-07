@@ -476,4 +476,22 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
         return lookup.get(leftValue).get(rightValue);
     }
+
+    @Override
+    public Void visitClassStmt(Class stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitForStmt(For stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitWhileStmt(While stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

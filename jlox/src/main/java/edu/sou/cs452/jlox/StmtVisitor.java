@@ -38,8 +38,11 @@ public interface StmtVisitor<T> {
             return visitVarStmt((Var) s);
         } else if (s instanceof While) {
             return visitWhileStmt((While) s);
-        } else {
+        } else if (s != null) { // if s isn't one of the types above
             throw new RuntimeException("Unsupported statement type: " + s.getClass().getName());
+        } else { // if s is null
+            throw new RuntimeException("Value for statement is null");
         }
+        
     }
 }
