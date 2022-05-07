@@ -21,9 +21,15 @@ import Json.Decode as Decode
 
 type alias Fragments decodesTo =
     { onBlock : SelectionSet decodesTo Api.Object.Block
+    , onClass : SelectionSet decodesTo Api.Object.Class
     , onExpression : SelectionSet decodesTo Api.Object.Expression
+    , onFor : SelectionSet decodesTo Api.Object.For
+    , onFunction : SelectionSet decodesTo Api.Object.Function
+    , onIf : SelectionSet decodesTo Api.Object.If
     , onPrint : SelectionSet decodesTo Api.Object.Print
+    , onReturn : SelectionSet decodesTo Api.Object.Return
     , onVar : SelectionSet decodesTo Api.Object.Var
+    , onWhile : SelectionSet decodesTo Api.Object.While
     }
 
 
@@ -35,9 +41,15 @@ fragments :
 fragments selections____ =
     Object.exhaustiveFragmentSelection
         [ Object.buildFragment "Block" selections____.onBlock
+        , Object.buildFragment "Class" selections____.onClass
         , Object.buildFragment "Expression" selections____.onExpression
+        , Object.buildFragment "For" selections____.onFor
+        , Object.buildFragment "Function" selections____.onFunction
+        , Object.buildFragment "If" selections____.onIf
         , Object.buildFragment "Print" selections____.onPrint
+        , Object.buildFragment "Return" selections____.onReturn
         , Object.buildFragment "Var" selections____.onVar
+        , Object.buildFragment "While" selections____.onWhile
         ]
 
 
@@ -47,9 +59,15 @@ update syntax to add `SelectionSet`s for the types you want to handle.
 maybeFragments : Fragments (Maybe decodesTo)
 maybeFragments =
     { onBlock = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onClass = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onExpression = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onFor = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onFunction = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onIf = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onPrint = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onReturn = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onVar = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onWhile = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     }
 
 

@@ -9,7 +9,7 @@ import Browser
 import Graphql.Http exposing (..)
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
-import Html exposing (Html, button, div, text, textarea)
+import Html exposing (Html, br, button, div, input, label, text, textarea)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import RemoteData exposing (RemoteData)
@@ -27,17 +27,20 @@ type alias Token =
 
 type Msg
     = GotResponse (RemoteData (Graphql.Http.Error String) String)
-    | ChangeText String
-    | Run -- changed from Scan to Run for lab 4
+    | ChangeCodeText String
+    -- | ChangeInputText String
+    | Sign -- added for lab 5
 
 type alias Model =
     { code : String -- changed from filter to code for lab 3
+    , input : String -- added for lab 5
     , tokens : RemoteData (Graphql.Http.Error String) String
     }
 
 query : Model -> SelectionSet String RootQuery
 query model =
-    Query.run { code = model.code } -- changed from filter to code for lab 3; changed to Query.run for lab 4
+    -- Query.run { code = model.code } -- changed from filter to code for lab 3; changed to Query.run for lab 4
+    Query.sign { code = model.code } -- added for lab 5 part 1
 
 makeRequest : Model -> Cmd Msg
 makeRequest model =
@@ -50,7 +53,7 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( { tokens = RemoteData.NotAsked, code = "" }, Cmd.none ) -- changed from filter to code for lab 3
+    ( { tokens = RemoteData.NotAsked, code = "", input = "" }, Cmd.none ) -- changed from filter to code for lab 3
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -58,10 +61,10 @@ update msg model =
         GotResponse response ->
             ( { model | tokens = response }, Cmd.none )
 
-        ChangeText s ->
+        ChangeCodeText s ->
             ( { model | code = s }, Cmd.none ) -- changed from filter to code for lab 3
 
-        Run -> -- changed from Scan to Run for lab 4
+        Sign -> -- changed from Scan to Run for lab 4, changed from Run to Sign for lab 5
             ( model, makeRequest model )
 
 main =
@@ -80,9 +83,12 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div []
-        [ textarea [ value model.code, onInput ChangeText ] [] -- changed from filter to code for lab 3
+        [ label [] [ text "Code: "]
+        , input [ value model.code, onInput ChangeCodeText ] [] -- changed from filter to code for lab 3
+        -- , label [] [ text " Input: " ]
+        -- , input [ value model.input, onInput ChangeInputText ] []
         , div []
-            [ button [ onClick Run ] [ text "Run Interpretor" ] -- changed from Scan to Run for lab 4
+            [ button [ onClick Sign ] [ text "Run AbstractInterpretor" ] -- changed from Scan to Run for lab 4, changed from Run to Sign for lab 5
             ]
         , div []
             [ viewResponse model.tokens ]
