@@ -41,7 +41,7 @@ public interface StmtVisitor<T> {
         } else if (s != null) { // if s isn't one of the types above
             throw new RuntimeException("Unsupported statement type: " + s.getClass().getName());
         } else { // if s is null
-            throw new RuntimeException("Value for statement is null");
+            throw new RuntimeException("Value for statement s is null");
         }
         
     }

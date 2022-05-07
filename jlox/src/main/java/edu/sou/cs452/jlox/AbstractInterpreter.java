@@ -156,9 +156,6 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
                 }
             }
         }
-        
-
-
 
         // Error handling
         throw new RuntimeError(stmt.getCondition(),
@@ -174,7 +171,13 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     @Override
     public Void visitReturnStmt(Return stmt) {
-        throw new RuntimeException("Abstract Interpretor can't handle return statements.");
+        AbstractValue abstrValue = null;
+        if (stmt.getValue() != null) {
+            abstrValue = evaluate(stmt.getValue());
+            outputString += abstrValue;
+            return null;
+        }
+        throw new RuntimeException("Null value for return statement stmt");
     }
 
     @Override
@@ -211,7 +214,22 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     @Override
     public AbstractValue visitLiteralExpr(Literal expr) {
-        throw new RuntimeException("Abstract Interpretor can't handle literal expressions.");
+        if (expr != null) {
+            AbstractValue abstrValue = evaluate(expr);
+            LiteralValue v = expr.getValue();
+            
+            if (v instanceof LiteralString) {
+                return AbstractValue.BOTTOM;
+            } else if (v instanceof LiteralFloat) {
+                LiteralFloat f = (LiteralFloat) v;
+                if (f.getValue() > 0) return AbstractValue.POSITIVE;
+                if (f.getValue() < 0) return AbstractValue.NEGATIVE;
+                if (f.getValue() == 0) return AbstractValue.ZERO;
+                return AbstractValue.BOTTOM;
+            }
+            return abstrValue;
+        }
+        throw new RuntimeException("Literal expression is null");
     }
 
     @Override
