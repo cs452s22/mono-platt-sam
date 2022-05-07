@@ -7,7 +7,11 @@ import java.util.List;
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 public class Parser {
-    private static class ParseError extends RuntimeException {}
+    private static class ParseError extends RuntimeException {
+        public ParseError(String message) {
+            super(message);
+        }
+    }
 
     private final List<Token> tokens;
     private int current = 0;
@@ -281,13 +285,11 @@ public class Parser {
 
             return new Literal(id, previous().getLiteral());
         }
-        
         if (match(IDENTIFIER)) {
             int id = current; // set id to current id
 
             return new Variable(id, previous());
         }
-
         if (match(LEFT_PAREN)) {
             Expr expr = expression();
             consume(RIGHT_PAREN, "Expect ')' after expression.");
@@ -307,7 +309,6 @@ public class Parser {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -341,7 +342,7 @@ public class Parser {
 
     private ParseError error(Token token, String message) {
         Lox.error(token, message);
-        return new ParseError();
+        throw new ParseError(message);
     }
 
     private void synchronize() {
