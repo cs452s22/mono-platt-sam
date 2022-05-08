@@ -69,7 +69,7 @@ public class Datafetcher {
         // interpret the statements
         abstrIntr.interpret(stmts);
 
-        System.out.println(abstrIntr.getOutputString());
+        // System.out.println(abstrIntr.getOutputString());
 
         // return what was interpreted
         return abstrIntr.getOutputString();

@@ -30,7 +30,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     final AbstractEnvironment globals = new AbstractEnvironment();
     private AbstractEnvironment environment = globals;
-    public String outputString; // to be used by the elm frontend later in lab 4 (and 5)
+    public String outputString = ""; // to be used by the elm frontend later in lab 4 (and 5)
 
     AbstractInterpreter() {
         globals.define("clock", new ClockFunction());
@@ -164,7 +164,7 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
                         }
                     }
                     
-                    outputString += unionValue.toString();
+                    // outputString += unionValue.toString();
                 }
             }
         }
