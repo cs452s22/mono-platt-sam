@@ -3,3 +3,4 @@ bagel/node_modules
 bagel/src/Api
 jlox/target
 .vscode/
+command-ref-list.txt
