@@ -177,18 +177,19 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
     @Override
     public Void visitPrintStmt(Print stmt) {
         AbstractValue value = evaluate(stmt.getExpression());
-        generateOutputString(value);
+        outputString += generateOutputString(value);
         return null;
     }
 
     @Override
     public Void visitReturnStmt(Return stmt) {
+        /*
         AbstractValue abstrValue = null;
         if (stmt.getValue() != null) {
             abstrValue = evaluate(stmt.getValue());
-            outputString += abstrValue;
             return null;
         }
+        */
         throw new RuntimeException("Null value for return statement stmt");
     }
 
@@ -227,13 +228,13 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
     @Override
     public AbstractValue visitLiteralExpr(Literal expr) {
         if (expr != null) { // if expr is not null
-            AbstractValue abstrValue = evaluate(expr);
             LiteralValue v = expr.getValue();
             if (v instanceof LiteralFloat) { // if it's a LiteralFloat
                 LiteralFloat f = (LiteralFloat) v;
                 if (f.getValue() > 0) return POSITIVE; // if the literalfloat is positive
                 if (f.getValue() < 0) return NEGATIVE; // if the literalfloat is negative
                 if (f.getValue() == 0) return ZERO; // if the literalfloat is zero
+                return BOTTOM;
             }
             return BOTTOM;
         }

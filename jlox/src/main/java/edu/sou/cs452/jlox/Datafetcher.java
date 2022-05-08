@@ -11,7 +11,6 @@ import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 @DgsComponent
 public class Datafetcher {
-    /*
     @DgsQuery
     public String run(@InputArgument String code) {
 
@@ -42,7 +41,6 @@ public class Datafetcher {
         // return what was interpreted
         return intr.getOutputString();
     }
-    */
 
     @DgsQuery
     public String sign(@InputArgument String code) {
