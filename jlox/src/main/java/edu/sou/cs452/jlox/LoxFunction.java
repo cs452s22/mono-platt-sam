@@ -57,19 +57,7 @@ class LoxFunction extends Function implements LoxCallable {
 
     @Override
     public LiteralValue call(AbstractInterpreter interpreter, List<AbstractValue> arguments) {
-        throw new RuntimeException("Abstract Interpretor can't handle calls for Lox Functions.");
-        /*
-        AbstractEnvironment environment = new AbstractEnvironment(abstractClosure);
-        for (int i = 0; i < declaration.getParams().size(); i++) {
-            environment.define(declaration.getParams().get(i).getLexeme(), arguments.get(i));
-        }
-
-        try {
-            interpreter.executeBlock(declaration.getBody(), environment);
-        } catch (ReturnException returnValue) {
-            return returnValue.getLiteralValue();
-        }
+        // TODO Auto-generated method stub
         return null;
-        */
     }
 }

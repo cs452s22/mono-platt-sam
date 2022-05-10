@@ -16,6 +16,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     Interpreter() {
         globals.define("clock", new ClockFunction());
+        globals.define("getC", new GetCFunction());
     }
 
     public void generateOutputString(LiteralValue value) {

@@ -17,7 +17,8 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
 
     private enum FunctionType {
         NONE,
-        FUNCTION
+        FUNCTION,
+        INITIALIZER
     }
 
     Resolver(Interpreter interpreter) {
@@ -31,12 +32,10 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
         }
     }
 
-    // TODO: fix this
     private void resolve(Stmt stmt) {
         stmt.accept(this);
     }
 
-    // TODO: fix this
     private void resolve(Expr expr) {
         expr.accept(this);
     }
@@ -137,6 +136,16 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
     public Void visitReturnStmt(Return stmt) {
         if (currentFunction == FunctionType.NONE) {
             throw new RuntimeError(stmt.getKeyword(), "Can't return from top-level code");
+        }
+
+        if (currentFunction == FunctionType.INITIALIZER) {
+            if (stmt.getValue() instanceof Literal) {
+                Literal returnExpr = (Literal) stmt.getValue();
+                if (returnExpr.getValue() instanceof LiteralNull) {
+                    return null;
+                }
+            }
+            Lox.error(stmt.getKeyword(), "Can't return a value from an initializer.");
         }
         return null;
     }

@@ -28,7 +28,7 @@ type alias Token =
 type Msg
     = GotResponse (RemoteData (Graphql.Http.Error String) String)
     | ChangeCodeText String
-    -- | ChangeInputText String
+    | ChangeInputText String
     | Sign -- added for lab 5
 
 type alias Model =
@@ -60,10 +60,10 @@ update msg model =
     case msg of
         GotResponse response ->
             ( { model | tokens = response }, Cmd.none )
-
         ChangeCodeText s ->
             ( { model | code = s }, Cmd.none ) -- changed from filter to code for lab 3
-
+        ChangeInputText s ->
+            ( { model | input = s }, Cmd.none ) -- added during lab 5 part 2
         Sign -> -- changed from Scan to Run for lab 4, changed from Run to Sign for lab 5
             ( model, makeRequest model )
 
@@ -85,8 +85,8 @@ view model =
     div []
         [ label [] [ text "Code: "]
         , textarea [ value model.code, onInput ChangeCodeText ] [] -- changed from filter to code for lab 3
-        -- , label [] [ text " Input: " ]
-        -- , input [ value model.input, onInput ChangeInputText ] []
+        , label [] [ text " Input: " ]
+        , textarea [ value model.input, onInput ChangeInputText ] []
         , div []
             [ button [ onClick Sign ] [ text "Run AbstractInterpretor" ] -- changed from Scan to Run for lab 4, changed from Run to Sign for lab 5
             ]
