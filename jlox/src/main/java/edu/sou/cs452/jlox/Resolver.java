@@ -13,6 +13,12 @@ import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
     private final Interpreter interpreter;
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
+    private FunctionType currentFunction = FunctionType.NONE;
+
+    private enum FunctionType {
+        NONE,
+        FUNCTION
+    }
 
     Resolver(Interpreter interpreter) {
         this.interpreter = interpreter;
@@ -27,12 +33,26 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
 
     // TODO: fix this
     private void resolve(Stmt stmt) {
-        // stmt.accept(this);
+        stmt.accept(this);
     }
 
     // TODO: fix this
     private void resolve(Expr expr) {
-        // expr.accept(this);
+        expr.accept(this);
+    }
+
+    private void resolveFunction(Function function, FunctionType type) {
+        FunctionType enclosingFunction = currentFunction;
+        currentFunction = type;
+
+        beginScope();
+        for (Token parem : function.getParams()) {
+            declare(parem);
+            define(parem);
+        }
+        resolve(function.getBody());
+        endScope();
+        currentFunction = enclosingFunction;
     }
 
     // create a new block scope
@@ -47,6 +67,9 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
     private void declare(Token name) {
         if (scopes.isEmpty()) { return; }
         Map<String, Boolean> scope = scopes.peek();
+        if (scope.containsKey(name.getLexeme())) {
+            Lox.error(name, "There is already a variable with this name in this scope.");
+        }
         scope.put(name.getLexeme(), false);
     }
 
@@ -91,25 +114,30 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
 
     @Override
     public Void visitExpressionStmt(Expression stmt) {
-        // TODO Auto-generated method stub
+        resolve(stmt.getExpression());
         return null;
     }
 
     @Override
     public Void visitFunctionStmt(Function stmt) {
-        // TODO Auto-generated method stub
+        declare(stmt.getName());
+        define(stmt.getName());
+
+        resolveFunction(stmt, FunctionType.FUNCTION);
         return null;
     }
 
     @Override
     public Void visitPrintStmt(Print stmt) {
-        // TODO Auto-generated method stub
+        resolve(stmt.getExpression());
         return null;
     }
 
     @Override
     public Void visitReturnStmt(Return stmt) {
-        // TODO Auto-generated method stub
+        if (currentFunction == FunctionType.NONE) {
+            throw new RuntimeError(stmt.getKeyword(), "Can't return from top-level code");
+        }
         return null;
     }
 
@@ -121,13 +149,19 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
 
     @Override
     public Void visitIfStmt(If stmt) {
-        // TODO Auto-generated method stub
+        resolve(stmt.getCondition());
+        resolve(stmt.getThenBranch());
+
+        if (stmt.getElseBranch() != null) {
+            resolve(stmt.getElseBranch());
+        }
         return null;
     }
 
     @Override
     public Void visitWhileStmt(While stmt) {
-        // TODO Auto-generated method stub
+        resolve(stmt.getCondition());
+        resolve(stmt.getBody());
         return null;
     }
 
@@ -139,37 +173,52 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
 
     @Override
     public LiteralValue visitBinaryExpr(Binary expr) {
-        // TODO Auto-generated method stub
+        resolve(expr.getLeft());
+        resolve(expr.getRight());
         return null;
     }
 
     @Override
     public LiteralValue visitCallExpr(Call expr) {
-        // TODO Auto-generated method stub
+        resolve(expr.getCallee());
+        for (Expr argument : expr.getArguments()) {
+            resolve(argument);
+        }
         return null;
     }
 
     @Override
     public LiteralValue visitGroupingExpr(Grouping expr) {
-        // TODO Auto-generated method stub
+        resolve(expr.getExpression());
         return null;
     }
 
     @Override
     public LiteralValue visitLiteralExpr(Literal expr) {
-        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Void visitLogicalExpr(Logical expr) {
+        resolve(expr.getLeft());
+        resolve(expr.getRight());
         return null;
     }
 
     @Override
     public LiteralValue visitUnaryExpr(Unary expr) {
-        // TODO Auto-generated method stub
+        resolve(expr.getRight());
         return null;
     }
 
     @Override
     public LiteralValue visitVariableExpr(Variable expr) {
-        // TODO Auto-generated method stub
+        if (!scopes.isEmpty() && 
+            scopes.peek().get(expr.getName().getLexeme()) == Boolean.FALSE) {
+                Lox.error(expr.getName(), "Can't read local variable in its own initializer");
+            }
+        
+        resolveLocal(expr, expr.getName());
         return null;
     }
 }

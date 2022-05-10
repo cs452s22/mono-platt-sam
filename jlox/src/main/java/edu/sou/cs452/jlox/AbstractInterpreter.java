@@ -50,11 +50,11 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
     }
 
     private AbstractValue evaluate(Expr expr) {
-        return accept(expr); // changed this line for lab 4
+        return accept(expr);
     }
 
     private Void execute(Stmt stmt) {
-        accept(stmt); // changed this line for lab 4
+        accept(stmt);
         return null;
     }
 
@@ -195,7 +195,15 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     @Override
     public Void visitVarStmt(Var stmt) {
-        throw new RuntimeException("Abstract Interpretor can't handle var statements.");
+        AbstractValue value = null;
+        if (stmt.getInitializer() != null) {
+            value = evaluate(stmt.getInitializer());
+        }
+
+        environment.define(stmt.getName().getLexeme(), value);
+        return null;
+
+       //  throw new RuntimeException("Abstract Interpretor can't handle var statements.");
     }
 
     @Override
@@ -320,10 +328,10 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         return null;
     }
 
+    // TODO: get confirmation this is correct
     public final static AbstractValue bang(AbstractValue rightValue) {
-        HashMap<AbstractValue, AbstractValue> lookup;
-
-        lookup = new HashMap<>();
+        HashMap<AbstractValue, AbstractValue> lookup = new HashMap<>();
+        
         lookup.put(POSITIVE, NEGATIVE); // ! positive
         lookup.put(NEGATIVE, POSITIVE); // ! negative
         lookup.put(ZERO, ZERO); // ! zero
@@ -334,9 +342,8 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
     }
 
     public final static AbstractValue minus(AbstractValue rightValue) {
-        HashMap<AbstractValue, AbstractValue> lookup;
+        HashMap<AbstractValue, AbstractValue> lookup = new HashMap<>();
 
-        lookup = new HashMap<>();
         lookup.put(POSITIVE, NEGATIVE); // - positive
         lookup.put(NEGATIVE, POSITIVE); // - negative
         lookup.put(ZERO, ZERO); // - zero
@@ -518,6 +525,12 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
 
     @Override
     public Void visitWhileStmt(While stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public AbstractValue visitLogicalExpr(Logical expr) {
         // TODO Auto-generated method stub
         return null;
     }

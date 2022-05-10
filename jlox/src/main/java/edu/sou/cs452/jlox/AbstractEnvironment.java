@@ -37,4 +37,8 @@ class AbstractEnvironment extends Environment {
         throw new RuntimeError(name,
             "Undefined variable '" + name.getLexeme() + "'.");
     }
+
+    void define(String name, AbstractValue value) {
+        values.put(name, value);
+    }
 }

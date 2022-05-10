@@ -8,6 +8,7 @@ public interface ExprVisitor<T> {
     T visitCallExpr(Call expr);
     T visitGroupingExpr(Grouping expr);
     T visitLiteralExpr(Literal expr);
+    T visitLogicalExpr(Logical expr);
     T visitUnaryExpr(Unary expr);
     T visitVariableExpr(Variable expr);
     
@@ -22,6 +23,8 @@ public interface ExprVisitor<T> {
             return visitGroupingExpr((Grouping) e);
         } else if (e instanceof Literal) {
             return visitLiteralExpr((Literal) e);
+        } else if (e instanceof Logical) {
+            return visitLogicalExpr((Logical) e);
         } else if (e instanceof Unary) {
             return visitUnaryExpr((Unary) e);
         } else if (e instanceof Variable) {

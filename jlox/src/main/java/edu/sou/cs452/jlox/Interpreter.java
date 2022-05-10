@@ -2,14 +2,16 @@ package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.generated.types.*;
 import edu.sou.cs452.jlox.generated.types.Class;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void> { // changed this line for lab 4
 
     final Environment globals = new Environment();
     private Environment environment = globals;
+    private final Map<Expr, Integer> locals = new HashMap<>();
     public String outputString; // to be used by the elm frontend later in lab 4
 
     Interpreter() {
@@ -40,6 +42,10 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     private Void execute(Stmt stmt) {
         accept(stmt); // changed this line for lab 4
         return null;
+    }
+
+    void resolve(Expr expr, int depth) {
+        locals.put(expr, depth);
     }
 
     Void executeBlock(List<Stmt> statements, Environment environment) {
@@ -338,7 +344,16 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public LiteralValue visitVariableExpr(Variable expr) {
-        return environment.get(expr.getName());
+        return lookUpVariable(expr.getName(), expr);
+    }
+
+    private LiteralValue lookUpVariable(Token name, Expr expr) {
+        Integer distance = locals.get(expr);
+        if (distance != null) {
+            return environment.getAt(distance, name.getLexeme());
+        } else {
+            return globals.get(name);
+        }
     }
 
     private Void checkNumberOperand(Token operator, LiteralValue operand) {
@@ -397,6 +412,12 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public Void visitForStmt(For stmt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public LiteralValue visitLogicalExpr(Logical expr) {
         // TODO Auto-generated method stub
         return null;
     }

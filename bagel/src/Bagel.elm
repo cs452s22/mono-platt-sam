@@ -84,7 +84,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ label [] [ text "Code: "]
-        , input [ value model.code, onInput ChangeCodeText ] [] -- changed from filter to code for lab 3
+        , textarea [ value model.code, onInput ChangeCodeText ] [] -- changed from filter to code for lab 3
         -- , label [] [ text " Input: " ]
         -- , input [ value model.input, onInput ChangeInputText ] []
         , div []
