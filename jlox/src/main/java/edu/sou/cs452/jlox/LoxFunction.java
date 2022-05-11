@@ -11,7 +11,7 @@ class LoxFunction extends Function implements LoxCallable {
     private final Environment closure;
     private final AbstractEnvironment abstractClosure;
 
-    public LoxFunction(Function declaration, Environment closure, boolean isInitializer) {
+    public LoxFunction(Function declaration, boolean isInitializer, Environment closure) {
         this.closure = closure;
         this.declaration = declaration;
         this.isInitializer = isInitializer;

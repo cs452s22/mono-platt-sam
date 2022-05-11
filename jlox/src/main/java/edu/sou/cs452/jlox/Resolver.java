@@ -10,7 +10,7 @@ import java.util.Stack;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
-public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
+public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
     private final Interpreter interpreter;
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
     private FunctionType currentFunction = FunctionType.NONE;
@@ -33,11 +33,11 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
     }
 
     private void resolve(Stmt stmt) {
-        stmt.accept(this);
+        accept(stmt);
     }
 
     private void resolve(Expr expr) {
-        expr.accept(this);
+        accept(expr);
     }
 
     private void resolveFunction(Function function, FunctionType type) {
@@ -175,20 +175,21 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
     }
 
     @Override
-    public LiteralValue visitAssignExpr(Assign expr) {
-        // TODO Auto-generated method stub
+    public Void visitAssignExpr(Assign expr) {
+        resolve(expr.getValue());
+        resolveLocal(expr, expr.getName());
         return null;
     }
 
     @Override
-    public LiteralValue visitBinaryExpr(Binary expr) {
+    public Void visitBinaryExpr(Binary expr) {
         resolve(expr.getLeft());
         resolve(expr.getRight());
         return null;
     }
 
     @Override
-    public LiteralValue visitCallExpr(Call expr) {
+    public Void visitCallExpr(Call expr) {
         resolve(expr.getCallee());
         for (Expr argument : expr.getArguments()) {
             resolve(argument);
@@ -197,13 +198,13 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
     }
 
     @Override
-    public LiteralValue visitGroupingExpr(Grouping expr) {
+    public Void visitGroupingExpr(Grouping expr) {
         resolve(expr.getExpression());
         return null;
     }
 
     @Override
-    public LiteralValue visitLiteralExpr(Literal expr) {
+    public Void visitLiteralExpr(Literal expr) {
         return null;
     }
 
@@ -215,13 +216,13 @@ public class Resolver implements ExprVisitor<LiteralValue>, StmtVisitor<Void> {
     }
 
     @Override
-    public LiteralValue visitUnaryExpr(Unary expr) {
+    public Void visitUnaryExpr(Unary expr) {
         resolve(expr.getRight());
         return null;
     }
 
     @Override
-    public LiteralValue visitVariableExpr(Variable expr) {
+    public Void visitVariableExpr(Variable expr) {
         if (!scopes.isEmpty() && 
             scopes.peek().get(expr.getName().getLexeme()) == Boolean.FALSE) {
                 Lox.error(expr.getName(), "Can't read local variable in its own initializer");
