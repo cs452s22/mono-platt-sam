@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.aop.target.HotSwappableTargetSource;
+
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisitor<Void> {
@@ -339,6 +341,59 @@ public class AbstractInterpreter implements ExprVisitor<AbstractValue>, StmtVisi
         lookup.put(TOP, TOP); // ! top
 
         return lookup.get(rightValue);
+    }
+
+    public final static AbstractValue divide(AbstractValue leftValue, AbstractValue rightValue) {
+        HashMap<AbstractValue, HashMap<AbstractValue, AbstractValue>> lookup = new HashMap();
+
+        HashMap<AbstractValue, AbstractValue> left;
+
+        // left + 
+        left = new HashMap();
+        left.put(POSITIVE, POSITIVE); // positive / positive
+        left.put(NEGATIVE, NEGATIVE); // positive / negative
+        left.put(ZERO, BOTTOM); // positive / zero
+        left.put(BOTTOM, BOTTOM); // positive / bottom
+        left.put(TOP, TOP); // positive / top
+        lookup.put(POSITIVE, left);
+
+        // left -
+        left = new HashMap();
+        left.put(POSITIVE, NEGATIVE); // negative / positive
+        left.put(NEGATIVE, POSITIVE); // negative / negative
+        left.put(ZERO, BOTTOM); // negative / zero
+        left.put(BOTTOM, BOTTOM); // negative / bottom
+        left.put(TOP, TOP); // negative / top
+        lookup.put(NEGATIVE, left);
+        
+        // left 0
+        left = new HashMap();
+        left.put(POSITIVE, ZERO); // zero / positive
+        left.put(NEGATIVE, ZERO); // zero / negative
+        left.put(ZERO, BOTTOM); // zero / zero
+        left.put(BOTTOM, BOTTOM); // zero / bottom
+        left.put(TOP, TOP); // zero / top
+        lookup.put(ZERO, left);
+
+        // left bottom
+        left = new HashMap();
+        left.put(POSITIVE, BOTTOM);
+        left.put(NEGATIVE, BOTTOM);
+        left.put(ZERO, BOTTOM);
+        left.put(BOTTOM, BOTTOM);
+        left.put(TOP, BOTTOM);
+        lookup.put(BOTTOM, left);
+        
+        // left top
+        left = new HashMap();
+        left.put(POSITIVE, TOP); // top / positive
+        left.put(NEGATIVE, TOP); // top / negative
+        left.put(ZERO, BOTTOM); // top / zero
+        left.put(BOTTOM, BOTTOM); // top / bottom
+        left.put(TOP, TOP); // top / top
+        lookup.put(TOP, left);
+
+        return lookup.get(leftValue).get(rightValue);
     }
 
     public final static AbstractValue minus(AbstractValue rightValue) {
