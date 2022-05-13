@@ -31,12 +31,14 @@ tokens requiredArgs____ object____ =
     Object.selectionForCompositeField "tokens" [ Argument.required "code" requiredArgs____.code Encode.string ] object____ (Basics.identity >> Decode.list)
 
 
-type alias SignRequiredArguments =
-    { code : String }
+type alias RunRequiredArguments =
+    { code : String
+    , input : String
+    }
 
 
-sign :
-    SignRequiredArguments
+run :
+    RunRequiredArguments
     -> SelectionSet String RootQuery
-sign requiredArgs____ =
-    Object.selectionForField "String" "sign" [ Argument.required "code" requiredArgs____.code Encode.string ] Decode.string
+run requiredArgs____ =
+    Object.selectionForField "String" "run" [ Argument.required "code" requiredArgs____.code Encode.string, Argument.required "input" requiredArgs____.input Encode.string ] Decode.string

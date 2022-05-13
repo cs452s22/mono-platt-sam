@@ -9,7 +9,7 @@ import Browser
 import Graphql.Http exposing (..)
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
-import Html exposing (Html, br, button, div, input, label, p, text, textarea)
+import Html exposing (Html, b, br, button, div, input, label, p, text, textarea)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import RemoteData exposing (RemoteData)
@@ -86,7 +86,12 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div []
-        [ p [] [ text "Usage: Be sure to have parentheses following function calls ie: getC()"]
+        [ p []
+            [ b [] [ text "Notes on usage:" ]
+            , br [] []
+            , p [] [ text "Ensure that you have parentheses following function calls in code ie: getC()" ]
+            , p [] [ text "Ensure that you have double quotation marks around your input ie: \"hello world\"" ]
+        ]
         , label [] [ text "Code: "]
         , textarea [ value model.code, onInput ChangeCodeText ] [] -- changed from filter to code for lab 3
         , label [] [ text " Input: " ]
