@@ -10,26 +10,29 @@ import java.util.Map;
 public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void> { // changed this line for lab 4
 
     final Environment globals = new Environment();
-    private Environment environment = globals;
+    private Environment environment = globals; 
     private final Map<Expr, Integer> locals = new HashMap<>();
-    public String outputString; // to be used by the elm frontend later in lab 4
+    public String outputString = ""; // to be used by the elm frontend later in lab 4
 
     Interpreter() {
         globals.define("clock", new ClockFunction());
         globals.define("getC", new GetCFunction());
     }
 
-    public void generateOutputString(LiteralValue value) {
+    public String generateOutputString(LiteralValue value) {
         if (value instanceof LiteralBoolean) {
-            outputString = (new Boolean(((LiteralBoolean) value).getValue())).toString();
+            return (new Boolean(((LiteralBoolean) value).getValue())).toString();
         } else if (value instanceof LiteralFloat) {
             Float f = (new Float(((LiteralFloat) value).getValue()));
-            outputString = f.toString();
             if (f % 1 == 0) { // if it is a whole number it is an integer
-                outputString = (new Integer(f.intValue())).toString();
+                return (new Integer(f.intValue())).toString();
+            } else {
+                return f.toString();
             }
         } else if (value instanceof LiteralString) {
-            outputString = ((LiteralString) value).getValue();
+            return ((LiteralString) value).getValue();
+        } else {
+            return value.toString();
         }
     }
     public String getOutputString() {
@@ -101,7 +104,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     @Override
     public Void visitPrintStmt(Print stmt) {
         LiteralValue value = evaluate(stmt.getExpression());
-        generateOutputString(value);
+        outputString += generateOutputString(value);
         return null;
     }
 

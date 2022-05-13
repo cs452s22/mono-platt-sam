@@ -41,4 +41,32 @@ class AbstractEnvironment extends Environment {
     void define(String name, AbstractValue value) {
         values.put(name, value);
     }
+
+    AbstractEnvironment ancestor(int distance) {
+        AbstractEnvironment environment = this;
+        for (int i = 0; i < distance; i++) {
+            environment = environment.enclosing;
+        }
+        return environment;
+    }
+    
+    AbstractValue getAbstractAt(int distance, String name) {
+        return ancestor(distance).values.get(name);
+    }
+
+    AbstractValue getAbstract(Token name) {
+        if (values.containsKey(name.getLexeme())) {
+          return values.get(name.getLexeme());
+        }
+
+        // If the variable isn’t found in this environment, we simply try the enclosing one
+        if (enclosing != null) {
+            return enclosing.getAbstract(name);
+        }
+    
+        throw new RuntimeError(name,
+            "Undefined variable '" + name.getLexeme() + "'.");
+    }
+
+
 }
