@@ -1,7 +1,7 @@
 type Query {
   tokens(code: String!): [Token!]!
   run(code: String!, input: String!) : String! # added during part 2
-  sign(code: String!) : String! # added during lab 5 part 1
+  # sign(code: String!) : String! # added during lab 5 part 1
 }
 
 enum TokenType {

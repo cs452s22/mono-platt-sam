@@ -18,12 +18,14 @@ public class GetCFunction extends Function implements LoxCallable {
     @Override
     public LiteralValue call(Interpreter interpreter, List<LiteralValue> arguments) {
         LiteralString str = (LiteralString)arguments.get(0);
-        
-        System.out.println(str.getValue());
-        char_iterator++;
-        return str;
-
-        // throw new IndexOutOfBoundsException("Index " + char_iterator + " out of bounds.");
+        String s = str.getValue();
+        if (char_iterator < s.length()) {
+            Character ch = s.charAt(char_iterator);
+            str = new LiteralString(ch.toString());
+            char_iterator++;
+            return str;
+        }
+        throw new IndexOutOfBoundsException("Index " + char_iterator + " out of bounds for string of length " + s.length());
     }
 
     @Override

@@ -23,25 +23,17 @@ public class Datafetcher {
         // create a scanner to scan the input
         Scanner sc = new Scanner(code);
 
-        System.out.println("test");
-
         // get the list of tokens using the scanner
         List<Token> tokens = sc.scanTokens();
 
         // prints out each token for debugging purposes
         // for (Token t : tokens) { System.out.println(t); }
 
-        System.out.println("test1");
-
         // create a new parser that will parse the tokens
         Parser parser = new Parser(tokens);
 
-        System.out.println("test2");
-
         // create a list of statements from the parser
         List<Stmt> stmts = parser.parse();
-
-        System.out.println("test3");
 
         // prints out each statement for debugging purposes
         // for (Stmt s : stmts) { System.out.println(s); }
@@ -49,12 +41,8 @@ public class Datafetcher {
         // create an interpreter
         Interpreter intr = new Interpreter();
 
-        System.out.println("test4");
-
         // interpret the statements
         intr.interpret(stmts);
-
-        System.out.println("test5");
         
         // System.out.println(intr.getOutputString());
 
