@@ -410,7 +410,20 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public Void visitClassStmt(Class stmt) {
+        Variable superclass = null;
+        if (superclass != null) {
+            superclass = evaluate(superclass);
+            
+            if (!(superclass instanceof LoxClass)) {
+                throw new RuntimeError(superclass.getName(),
+                    "Superclass must be a class.");
+            }
+        }
         environment.define(stmt.getName().getLexeme(), null);
+        if (stmt.getSuperclass() != null) {
+            environment = new Environment(environment);
+            environment.define("super", superclass);
+        }
         Map<String, LoxFunction> methods = new HashMap<>();
         for (Function method : stmt.getMethods()) {
             String s = method.getName().getLexeme();

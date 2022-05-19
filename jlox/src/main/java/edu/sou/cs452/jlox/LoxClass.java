@@ -9,16 +9,22 @@ import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 class LoxClass extends Class implements LoxCallable {
   final String name;
+  final LoxClass superclass;
   public final Map<String, LoxFunction> methods;
 
-  LoxClass(String name, Map<String, LoxFunction> methods) {
+  LoxClass(String name, LoxClass superclass, Map<String, LoxFunction> methods) {
     this.name = name;
+    this.superclass = superclass;
     this.methods = methods;
   }
 
   LoxFunction findMethod(String name) {
     if (methods.containsKey(name)) {
       return methods.get(name);
+    }
+
+    if (superclass != null) {
+      return superclass.findMethod(name);
     }
 
     return null;

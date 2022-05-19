@@ -11,6 +11,7 @@ public interface ExprVisitor<T> {
     T visitLiteralExpr(Literal expr);
     T visitLogicalExpr(Logical expr);
     T visitSetExpr(Set expr);
+    T visitSuperExpr(Super expr);
     T visitThisExpr(This expr);
     T visitUnaryExpr(Unary expr);
     T visitVariableExpr(Variable expr);
@@ -32,6 +33,8 @@ public interface ExprVisitor<T> {
             return visitLogicalExpr((Logical) e);
         } else if (e instanceof Set) {
             return visitSetExpr((Set) e);
+        } else if (e instanceof Super) {
+            return visitSuperExpr((Super) e);
         } else if (e instanceof This) {
             return visitThisExpr((This) e);
         } else if (e instanceof Unary) {

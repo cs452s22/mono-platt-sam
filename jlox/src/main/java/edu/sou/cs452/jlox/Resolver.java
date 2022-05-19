@@ -108,6 +108,12 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
         currentClass = ClassType.CLASS;
         declare(stmt.getName());
         define(stmt.getName());
+        if (stmt.getSuperclass() != null && stmt.getName().getLexeme().equals(stmt.getSuperclass().getName().getLexeme())) {
+            Lox.error(stmt.getSuperclass().getName(), "A class can't inherit from itself.");
+        }
+        if (stmt.getSuperclass() != null) {
+            resolve(stmt.getSuperclass());
+        }
         beginScope();
         scopes.peek().put("this", true);
         for (Function method : stmt.getMethods()) {
@@ -118,6 +124,7 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
             resolveFunction(method, declaration); 
         }
         endScope();
+        if (stmt.getSuperclass() != null) endScope();
         currentClass = enclosingClass;
         return null;
     }
@@ -243,6 +250,12 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
     public Void visitSetExpr(Set expr) {
         resolve(expr.getValue());
         resolve(expr.getObject());
+        return null;
+    }
+
+    @Override
+    public Void visitSuperExpr(Super expr) {
+        resolveLocal(expr, expr.getKeyword());
         return null;
     }
 

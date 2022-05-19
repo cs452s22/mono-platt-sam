@@ -58,7 +58,7 @@ type Token {
 }
 
 ### Literal Types
-union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull | Function | Class
+union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull | Function | Class | Variable
 
 type LiteralBoolean {
   value : Boolean!

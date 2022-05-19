@@ -65,9 +65,9 @@ public class Parser {
         }
         consume(LEFT_BRACE, "Expect '{' before class body.");
     
-        List<Function> methods = new ArrayList<>(); // TODO: turn this into a map
+        List<Function> methods = new ArrayList<>();
         while (!check(RIGHT_BRACE) && !isAtEnd()) {
-          methods.add(function("method"));
+            methods.add(function("method"));
         }
     
         consume(RIGHT_BRACE, "Expect '}' after class body.");
@@ -313,6 +313,13 @@ public class Parser {
             int id = current; // set id to current id
 
             return new Literal(id, previous().getLiteral());
+        }
+        if (match(SUPER)) {
+            Token keyword = previous();
+            consume(DOT, "Expect '.' after 'super'.");
+            Token method = consume(IDENTIFIER,
+                "Expect superclass method name.");
+            return new Super(current, keyword, method);
         }
         if (match(THIS)) {
             return new This(current, previous());
