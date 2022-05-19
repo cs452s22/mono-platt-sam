@@ -410,7 +410,18 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public Void visitClassStmt(Class stmt) {
-        // TODO Auto-generated method stub
+        environment.define(stmt.getName().getLexeme(), null);
+        Map<String, LoxFunction> methods = new HashMap<>();
+        for (Function method : stmt.getMethods()) {
+            String s = method.getName().getLexeme();
+            boolean isInit = (s.equals("init"));
+
+            LoxFunction function = new LoxFunction(method, isInit, environment);
+            methods.put(method.getName().getLexeme(), function);
+        }
+
+        LoxClass klass = new LoxClass(stmt.getName().getLexeme(), methods);
+        environment.assign(stmt.getName(), klass);
         return null;
     }
 
@@ -424,5 +435,35 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     public LiteralValue visitLogicalExpr(Logical expr) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public LiteralValue visitSetExpr(Set expr) {
+        LiteralValue objValue = evaluate(expr.getObject());
+
+        if (!(objValue instanceof LoxInstance)) { 
+        throw new RuntimeError(expr.getName(),
+                                "Only instances have fields.");
+        }
+
+        LiteralValue value = evaluate(expr.getValue());
+        ((LoxInstance)objValue).set(expr.getName(), value);
+        return value;
+    }
+
+    @Override
+    public LiteralValue visitThisExpr(This expr) {
+        return lookUpVariable(expr.getKeyword(), expr);
+    }
+
+    @Override
+    public LiteralValue visitGetExpr(Get expr) {
+      LiteralValue value = evaluate(expr);
+      if (value instanceof LoxInstance) {
+        return ((LoxInstance) value).get(expr.getName());
+      }
+  
+      throw new RuntimeError(expr.getName(),
+          "Only instances have properties.");
     }
 }

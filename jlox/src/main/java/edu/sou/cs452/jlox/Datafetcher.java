@@ -71,15 +71,6 @@ public class Datafetcher {
         // prints out each statement for debugging purposes
         // for (Stmt s : stmts) { System.out.println(s); }
 
-        // create an interpreter
-        AbstractInterpreter abstrIntr = new AbstractInterpreter();
-
-        // interpret the statements
-        abstrIntr.interpret(stmts);
-
-        // System.out.println(abstrIntr.getOutputString());
-
-        // return what was interpreted
-        return abstrIntr.getOutputString();
+        return null;
     }
 }

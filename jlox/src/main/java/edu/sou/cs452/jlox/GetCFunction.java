@@ -1,7 +1,5 @@
 package edu.sou.cs452.jlox;
 
-import edu.sou.cs452.jlox.AbstractInterpreter.*;
-import edu.sou.cs452.jlox.AbstractInterpreter.AbstractValue;
 import edu.sou.cs452.jlox.generated.types.*;
 import java.util.List;
 
@@ -26,10 +24,5 @@ public class GetCFunction extends Function implements LoxCallable {
             return str;
         }
         throw new IndexOutOfBoundsException("Index " + char_iterator + " out of bounds for string of length " + s.length());
-    }
-
-    @Override
-    public LiteralValue call(AbstractInterpreter interpreter, List<AbstractValue> arguments) {
-        throw new RuntimeException("call is not implemented for abstract interpreter");
     }
 }

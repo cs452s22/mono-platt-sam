@@ -1,6 +1,7 @@
 package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.generated.types.*;
+import edu.sou.cs452.jlox.generated.types.Class;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,9 @@ public class Parser {
 
     private Stmt declaration() {
         try {
+            if (match(CLASS)) {
+                return loxClassDeclaration();
+            }
             if (match(FUN)) {
                 return function("function");
             }
@@ -50,6 +54,25 @@ public class Parser {
             synchronize();
             return null;
         }
+    }
+
+    private Stmt loxClassDeclaration() {
+        Token name = consume(IDENTIFIER, "Expect class name.");
+        Variable superclass = null;
+        if (match(LESS)) {
+            consume(IDENTIFIER, "Expect superclass name.");
+            superclass = new Variable(current, previous());
+        }
+        consume(LEFT_BRACE, "Expect '{' before class body.");
+    
+        List<Function> methods = new ArrayList<>(); // TODO: turn this into a map
+        while (!check(RIGHT_BRACE) && !isAtEnd()) {
+          methods.add(function("method"));
+        }
+    
+        consume(RIGHT_BRACE, "Expect '}' after class body.");
+    
+        return new Class(current, name, superclass, methods);
     }
 
     private Stmt statement() {
@@ -158,8 +181,10 @@ public class Parser {
                 int id = current; // set id to current id
 
                 return new Assign(id, name, value);
+            } else if (expr instanceof Get) {
+                Get get = (Get)expr;
+                return new Set(current, get.getObject(), get.getName(), value);
             }
-    
             error(equals, "Invalid assignment target."); 
         }
         return expr;
@@ -258,6 +283,10 @@ public class Parser {
         while (true) { 
           if (match(LEFT_PAREN)) {
             expr = finishCall(expr);
+            } else if (match(DOT)) {
+            Token name = consume(IDENTIFIER,
+                "Expect property name after '.'.");
+            expr = new Get(current, expr, name);
           } else { break; }
         }
     
@@ -284,6 +313,9 @@ public class Parser {
             int id = current; // set id to current id
 
             return new Literal(id, previous().getLiteral());
+        }
+        if (match(THIS)) {
+            return new This(current, previous());
         }
         if (match(IDENTIFIER)) {
             int id = current; // set id to current id
@@ -360,6 +392,16 @@ public class Parser {
                 case PRINT:
                 case RETURN:
                     return;
+                case PROTO:
+                    Token name = consume(IDENTIFIER, "Expect property name after '.'.");
+                    // Token name;
+                    if (check(IDENTIFIER)) {
+                        name = consume(IDENTIFIER, "Expect property name after '.'.");
+                    } else if (check(PROTO)) {
+                        name = consume(PROTO, "Expect proto after '.'.");
+                    } else {
+                        throw error(peek(), "Expect property or proto after dot.");
+                    }
             }
             advance();
         }

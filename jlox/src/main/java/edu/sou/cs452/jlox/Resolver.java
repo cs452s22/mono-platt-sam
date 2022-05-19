@@ -15,15 +15,23 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
     private FunctionType currentFunction = FunctionType.NONE;
 
-    private enum FunctionType {
-        NONE,
-        FUNCTION,
-        INITIALIZER
-    }
-
     Resolver(Interpreter interpreter) {
         this.interpreter = interpreter;
     }
+
+    private enum FunctionType {
+        NONE,
+        FUNCTION,
+        INITIALIZER,
+        METHOD
+    }
+
+    private enum ClassType {
+        NONE,
+        CLASS
+    }
+    
+    private ClassType currentClass = ClassType.NONE;
 
     // walks a list of statements and calls each one
     void resolve(List<Stmt> statements) {
@@ -96,8 +104,21 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
 
     @Override
     public Void visitClassStmt(Class stmt) {
+        ClassType enclosingClass = currentClass;
+        currentClass = ClassType.CLASS;
         declare(stmt.getName());
         define(stmt.getName());
+        beginScope();
+        scopes.peek().put("this", true);
+        for (Function method : stmt.getMethods()) {
+            FunctionType declaration = FunctionType.METHOD;
+            if (method.getName().getLexeme().equals("init")) {
+                declaration = FunctionType.INITIALIZER;
+            }
+            resolveFunction(method, declaration); 
+        }
+        endScope();
+        currentClass = enclosingClass;
         return null;
     }
 
@@ -137,16 +158,19 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
         if (currentFunction == FunctionType.NONE) {
             throw new RuntimeError(stmt.getKeyword(), "Can't return from top-level code");
         }
-
-        if (currentFunction == FunctionType.INITIALIZER) {
-            if (stmt.getValue() instanceof Literal) {
-                Literal returnExpr = (Literal) stmt.getValue();
-                if (returnExpr.getValue() instanceof LiteralNull) {
-                    return null;
+        if (stmt.getValue() != null) {
+            if (currentFunction == FunctionType.INITIALIZER) {
+                if (stmt.getValue() instanceof Literal) {
+                    Literal returnExpr = (Literal) stmt.getValue();
+                    if (returnExpr.getValue() instanceof LiteralNull) {
+                        return null;
+                    }
                 }
+                Lox.error(stmt.getKeyword(), "Can't return a value from an initializer.");
             }
-            Lox.error(stmt.getKeyword(), "Can't return a value from an initializer.");
+            resolve(stmt.getValue());
         }
+      
         return null;
     }
 
@@ -216,6 +240,23 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
     }
 
     @Override
+    public Void visitSetExpr(Set expr) {
+        resolve(expr.getValue());
+        resolve(expr.getObject());
+        return null;
+    }
+
+    @Override
+    public Void visitThisExpr(This expr) {
+        if (currentClass == ClassType.NONE) {
+            Lox.error(expr.getKeyword(), "Can't use 'this' outside of a class.");
+            return null;
+        }
+        resolveLocal(expr, expr.getKeyword());
+        return null;
+    }
+
+    @Override
     public Void visitUnaryExpr(Unary expr) {
         resolve(expr.getRight());
         return null;
@@ -229,6 +270,12 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
             }
         
         resolveLocal(expr, expr.getName());
+        return null;
+    }
+
+    @Override
+    public Void visitGetExpr(Get expr) {
+        resolve(expr);
         return null;
     }
 }

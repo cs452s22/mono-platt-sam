@@ -39,6 +39,7 @@ enum TokenType {
   NIL
   OR
   PRINT
+  PROTO
   RETURN
   SUPER
   THIS
@@ -57,7 +58,7 @@ type Token {
 }
 
 ### Literal Types
-union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull | Function
+union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull | Function | Class
 
 type LiteralBoolean {
   value : Boolean!

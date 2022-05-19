@@ -1,6 +1,5 @@
 package edu.sou.cs452.jlox;
 
-import edu.sou.cs452.jlox.AbstractInterpreter.*;
 import edu.sou.cs452.jlox.generated.types.*;
 import java.util.List;
 
@@ -9,20 +8,21 @@ class LoxFunction extends Function implements LoxCallable {
     public final boolean isInitializer;
     private final Function declaration;
     private final Environment closure;
-    private final AbstractEnvironment abstractClosure;
 
     public LoxFunction(Function declaration, boolean isInitializer, Environment closure) {
         this.closure = closure;
         this.declaration = declaration;
         this.isInitializer = isInitializer;
-        this.abstractClosure = null;
     }
 
-    public LoxFunction(Function declaration, boolean isInitializer, AbstractEnvironment closure) {
-        this.closure = null;
-        this.declaration = declaration;
-        this.isInitializer = isInitializer;
-        this.abstractClosure = closure;
+    LoxFunction bind(LoxInstance instance) {
+        Environment environment = new Environment(closure);
+        environment.define("this", instance);
+
+        String s = declaration.getName().getLexeme();
+        boolean isInit = (s.equals("init"));
+
+        return new LoxFunction(declaration, isInit, environment);
     }
 
     @Override
@@ -53,11 +53,5 @@ class LoxFunction extends Function implements LoxCallable {
         if (isInitializer) return closure.getAt(0, "this");
 
         return new LiteralNull();
-    }
-
-    @Override
-    public LiteralValue call(AbstractInterpreter interpreter, List<AbstractValue> arguments) {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

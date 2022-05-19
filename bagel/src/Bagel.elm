@@ -1,6 +1,7 @@
 module Bagel exposing (..)
 
 -- For Api.Object.Token scope
+
 import Api.Enum.TokenType exposing (..)
 import Api.Object exposing (Token)
 import Api.Object.Token as TokenFields
