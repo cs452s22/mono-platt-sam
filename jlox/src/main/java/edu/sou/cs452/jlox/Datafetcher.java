@@ -16,7 +16,7 @@ public class Datafetcher {
             int getCStartIndex = code.indexOf("getC");
             // System.out.println(code.substring(0, getCStartIndex));
             // System.out.println(code.substring(getCStartIndex));
-            String newString = code.substring(0, getCStartIndex+5) + input + code.substring(getCStartIndex+5);
+            String newString = code.substring(0, getCStartIndex + 5) + input + code.substring(getCStartIndex+5);
             code = newString;
         }
 
@@ -27,7 +27,7 @@ public class Datafetcher {
         List<Token> tokens = sc.scanTokens();
 
         // prints out each token for debugging purposes
-        for (Token t : tokens) { System.out.println(t); }
+        // for (Token t : tokens) { System.out.println(t); }
 
         // create a new parser that will parse the tokens
         Parser parser = new Parser(tokens);
@@ -36,7 +36,7 @@ public class Datafetcher {
         List<Stmt> stmts = parser.parse();
 
         // prints out each statement for debugging purposes
-        for (Stmt s : stmts) { System.out.println(s); }
+        // for (Stmt s : stmts) { System.out.println(s); }
 
         // create an interpreter
         Interpreter intr = new Interpreter();

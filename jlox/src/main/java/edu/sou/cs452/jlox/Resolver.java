@@ -85,11 +85,10 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
         scopes.peek().put(name.getLexeme(), true);
     }
 
-    // TODO: Fix this
     // resolve the variable itself using a helper
     private void resolveLocal(Expr expr, Token name) {
         for (int i = scopes.size() - 1; i >= 0; i--) {
-            // interpreter.resolve(expr, scopes.size() - 1 - i);
+            interpreter.resolve(expr, scopes.size() - 1 - i);
             return;
         }
     }

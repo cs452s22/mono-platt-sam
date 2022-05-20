@@ -502,12 +502,14 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public LiteralValue visitGetExpr(Get expr) {
-      LiteralValue value = evaluate(expr);
-      if (value instanceof LoxClass) {
-        return ((LoxClass) value).get(expr.getName());
-      }
+        //System.out.println("...expr.getObject() = " + expr.getObject()); // TODO: delete when done with debugging
+        LiteralValue value = evaluate(expr.getObject());
+        //System.out.println(value);
+        if (value instanceof LoxClass) {
+            return ((LoxClass) value).get(expr.getName());
+        }
   
-      throw new RuntimeError(expr.getName(),
-          "Only instances have properties.");
+        throw new RuntimeError(expr.getName(),
+            "Only instances have properties.");
     }
 }
