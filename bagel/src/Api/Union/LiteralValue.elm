@@ -26,6 +26,7 @@ type alias Fragments decodesTo =
     , onLiteralNull : SelectionSet decodesTo Api.Object.LiteralNull
     , onFunction : SelectionSet decodesTo Api.Object.Function
     , onClass : SelectionSet decodesTo Api.Object.Class
+    , onVariable : SelectionSet decodesTo Api.Object.Variable
     }
 
 
@@ -42,6 +43,7 @@ fragments selections____ =
         , Object.buildFragment "LiteralNull" selections____.onLiteralNull
         , Object.buildFragment "Function" selections____.onFunction
         , Object.buildFragment "Class" selections____.onClass
+        , Object.buildFragment "Variable" selections____.onVariable
         ]
 
 
@@ -56,4 +58,5 @@ maybeFragments =
     , onLiteralNull = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onFunction = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onClass = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onVariable = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     }

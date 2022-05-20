@@ -410,12 +410,12 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public Void visitClassStmt(Class stmt) {
-        Variable superclass = null;
-        if (superclass != null) {
-            superclass = evaluate(superclass);
+        LiteralValue superclass = stmt.getSuperclass();
+        if (superclass != null && superclass instanceof Variable) {
+            superclass = evaluate(stmt.getSuperclass());
             
             if (!(superclass instanceof LoxClass)) {
-                throw new RuntimeError(superclass.getName(),
+                throw new RuntimeError(stmt.getSuperclass().getName(),
                     "Superclass must be a class.");
             }
         }
@@ -432,8 +432,13 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
             LoxFunction function = new LoxFunction(method, isInit, environment);
             methods.put(method.getName().getLexeme(), function);
         }
-
-        LoxClass klass = new LoxClass(stmt.getName().getLexeme(), methods);
+        LoxClass souper = null;
+        if (superclass instanceof LoxClass) {
+            Class c = (Class)superclass;
+            Stmt s = (Stmt)c;
+            // superclass needs to become souper somehow
+        }
+        LoxClass klass = new LoxClass(stmt.getName().getLexeme(), souper, methods);
         environment.assign(stmt.getName(), klass);
         return null;
     }
@@ -454,14 +459,40 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     public LiteralValue visitSetExpr(Set expr) {
         LiteralValue objValue = evaluate(expr.getObject());
 
-        if (!(objValue instanceof LoxInstance)) { 
-        throw new RuntimeError(expr.getName(),
-                                "Only instances have fields.");
+        if (!(objValue instanceof LoxClass)) { 
+            throw new RuntimeError(expr.getName(), "Only classes have fields.");
         }
 
+        // Prototype-based inheritance by setting super directly.
+        if (expr.getName().getType() == TokenType.PROTO) {
+            ((LoxClass) objValue).setSuperklass((LoxClass) expr.getValue());
+        } else {
+            ((LoxClass) objValue).set(expr.getName(), accept(expr.getValue()));
+        }
+
+
         LiteralValue value = evaluate(expr.getValue());
-        ((LoxInstance)objValue).set(expr.getName(), value);
+        ((LoxClass)objValue).set(expr.getName(), value);
         return value;
+
+        
+    }
+
+    @Override
+    public LiteralValue visitSuperExpr(Super expr) {
+        int distance = locals.get(expr);
+        LoxClass superclass = (LoxClass)environment.getAt(
+            distance, "super");
+        LoxClass loxClass = (LoxClass)environment.getAt(
+            distance - 1, "this");
+        LoxFunction method = superclass.findMethod(expr.getMethod().getLexeme());
+
+        if (method == null) {
+            throw new RuntimeError(expr.getMethod(),
+                "Undefined property '" + expr.getMethod().getLexeme() + "'.");
+        }
+
+        return method.bind(loxClass);
     }
 
     @Override
@@ -472,8 +503,8 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     @Override
     public LiteralValue visitGetExpr(Get expr) {
       LiteralValue value = evaluate(expr);
-      if (value instanceof LoxInstance) {
-        return ((LoxInstance) value).get(expr.getName());
+      if (value instanceof LoxClass) {
+        return ((LoxClass) value).get(expr.getName());
       }
   
       throw new RuntimeError(expr.getName(),

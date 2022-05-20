@@ -27,7 +27,7 @@ public class Datafetcher {
         List<Token> tokens = sc.scanTokens();
 
         // prints out each token for debugging purposes
-        // for (Token t : tokens) { System.out.println(t); }
+        for (Token t : tokens) { System.out.println(t); }
 
         // create a new parser that will parse the tokens
         Parser parser = new Parser(tokens);
@@ -36,7 +36,7 @@ public class Datafetcher {
         List<Stmt> stmts = parser.parse();
 
         // prints out each statement for debugging purposes
-        // for (Stmt s : stmts) { System.out.println(s); }
+        for (Stmt s : stmts) { System.out.println(s); }
 
         // create an interpreter
         Interpreter intr = new Interpreter();
@@ -44,7 +44,7 @@ public class Datafetcher {
         // interpret the statements
         intr.interpret(stmts);
         
-        // System.out.println(intr.getOutputString());
+        System.out.println(intr.getOutputString());
 
         // return what was interpreted
         return intr.getOutputString();
@@ -60,7 +60,7 @@ public class Datafetcher {
         List<Token> tokens = sc.scanTokens();
 
         // prints out each token for debugging purposes
-        // for (Token t : tokens) { System.out.println(t); }
+        for (Token t : tokens) { System.out.println(t); }
 
         // create a new parser that will parse the tokens
         Parser parser = new Parser(tokens);
@@ -69,7 +69,7 @@ public class Datafetcher {
         List<Stmt> stmts = parser.parse();
 
         // prints out each statement for debugging purposes
-        // for (Stmt s : stmts) { System.out.println(s); }
+        for (Stmt s : stmts) { System.out.println(s); }
 
         return null;
     }

@@ -15,9 +15,9 @@ class LoxFunction extends Function implements LoxCallable {
         this.isInitializer = isInitializer;
     }
 
-    LoxFunction bind(LoxInstance instance) {
+    LoxFunction bind(LoxClass loxClass) {
         Environment environment = new Environment(closure);
-        environment.define("this", instance);
+        environment.define("this", loxClass);
 
         String s = declaration.getName().getLexeme();
         boolean isInit = (s.equals("init"));

@@ -2,6 +2,8 @@ package edu.sou.cs452.jlox;
 
 import edu.sou.cs452.jlox.generated.types.*;
 import edu.sou.cs452.jlox.generated.types.Class;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,12 +11,13 @@ import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
 class LoxClass extends Class implements LoxCallable {
   final String name;
-  final LoxClass superclass;
+  private LoxClass superklass;
   public final Map<String, LoxFunction> methods;
+  private final Map<String, LiteralValue> fields = new HashMap<>();
 
-  LoxClass(String name, LoxClass superclass, Map<String, LoxFunction> methods) {
+  LoxClass(String name, LoxClass superklass, Map<String, LoxFunction> methods) {
     this.name = name;
-    this.superclass = superclass;
+    this.superklass = superklass;
     this.methods = methods;
   }
 
@@ -23,21 +26,49 @@ class LoxClass extends Class implements LoxCallable {
       return methods.get(name);
     }
 
-    if (superclass != null) {
-      return superclass.findMethod(name);
+    if (superklass != null) {
+      return superklass.findMethod(name);
     }
 
     return null;
   }
 
+  public void setSuperklass(LoxClass superklass) {
+    this.superklass = superklass;
+  }
+
+  LiteralValue get(Token name) {
+    if (fields.containsKey(name.getLexeme())) {
+      return fields.get(name.getLexeme());
+    }
+    
+    // When looking up a method, return that method enclosed
+    // over the current instance (this)
+    LoxFunction method = findMethod(name.getLexeme());
+    if (method != null) return method.bind(this);
+
+    // We don't have field or method on this object with that name.
+    // Check the parent.
+    if (superklass != null && superklass.get(name) != null) {
+      return superklass.get(name);
+    
+    }
+
+    throw new RuntimeError(name, "Undefined property '" + name.getLexeme() + "'.");
+  }
+
+  void set(Token name, LiteralValue value) {
+    fields.put(name.getLexeme(), value);
+  }
+
   @Override
   public LiteralValue call(Interpreter interpreter, List<LiteralValue> arguments) {
-    LoxInstance instance = new LoxInstance(this);
+    LoxClass instance = new LoxClass("", this, new HashMap<>());
     LoxFunction initializer = findMethod("init");
     if (initializer != null) {
       initializer.bind(instance).call(interpreter, arguments);
     }
-    LoxClass klass = instance.getLoxClass();
+    LoxClass klass = this.superklass;
     return klass;
   }
 
