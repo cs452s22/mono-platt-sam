@@ -100,7 +100,7 @@ public class Parser {
         return new Print(id, value);
     }
 
-    private Return returnStatement() {
+    private Stmt returnStatement() {
         Token keyword = previous();
         Expr value = null;
         if (!check(SEMICOLON)) {

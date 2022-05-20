@@ -53,9 +53,9 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
         currentFunction = type;
 
         beginScope();
-        for (Token parem : function.getParams()) {
-            declare(parem);
-            define(parem);
+        for (Token param : function.getParams()) {
+            declare(param);
+            define(param);
         }
         resolve(function.getBody());
         endScope();
@@ -87,7 +87,7 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
 
     // resolve the variable itself using a helper
     private void resolveLocal(Expr expr, Token name) {
-        for (int i = scopes.size() - 1; i >= 0; i--) {
+        for (int i = scopes.size() - 1; i >= 0; i--) { // TODO: this might be suspicious
             interpreter.resolve(expr, scopes.size() - 1 - i);
             return;
         }
@@ -270,7 +270,7 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
 
     @Override
     public Void visitUnaryExpr(Unary expr) {
-        resolve(expr.getRight());
+        resolve(expr.getRight()); // resolve its one operand
         return null;
     }
 
@@ -287,7 +287,7 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
 
     @Override
     public Void visitGetExpr(Get expr) {
-        resolve(expr);
+        resolve(expr.getObject());
         return null;
     }
 }
