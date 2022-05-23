@@ -352,7 +352,9 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     }
 
     private LiteralValue lookUpVariable(Token name, Expr expr) {
+        System.out.println("Hello?????????" + expr + "..." + name);
         Integer distance = locals.get(expr);
+        System.out.println("Bar" + distance);
         if (distance != null) {
             return environment.getAt(distance, name.getLexeme());
         } else {
@@ -410,14 +412,17 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public Void visitClassStmt(Class stmt) {
-        LiteralValue superclass = stmt.getSuperclass();
-        if (superclass != null && superclass instanceof Variable) {
-            superclass = evaluate(stmt.getSuperclass());
+        LiteralValue superclass = null;
+        if (stmt.getSuperclass() != null) {
+            superclass = stmt.getSuperclass();
             
             if (!(superclass instanceof LoxClass)) {
                 throw new RuntimeError(stmt.getSuperclass().getName(),
                     "Superclass must be a class.");
             }
+        } else {
+            System.out.println("stmt: " + stmt.toString());
+            throw new RuntimeError(stmt.getName(), "stmt.getSuperClass() is null");
         }
         environment.define(stmt.getName().getLexeme(), null);
         if (stmt.getSuperclass() != null) {
@@ -432,13 +437,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
             LoxFunction function = new LoxFunction(method, isInit, environment);
             methods.put(method.getName().getLexeme(), function);
         }
-        LoxClass souper = null;
-        if (superclass instanceof LoxClass) {
-            Class c = (Class)superclass;
-            Stmt s = (Stmt)c;
-            // superclass needs to become souper somehow
-        }
-        LoxClass klass = new LoxClass(stmt.getName().getLexeme(), souper, methods);
+        LoxClass klass = new LoxClass(stmt.getName().getLexeme(), (LoxClass) superclass, methods);
         environment.assign(stmt.getName(), klass);
         return null;
     }
@@ -505,7 +504,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         // LiteralValue value = evaluate(expr.getObject()); // original
         LiteralValue value = accept(expr.getObject()); // new version???
         System.out.println("Foo" + expr.getObject());
-        System.out.println(value.toString() + expr + expr.getObject());
+        //System.out.println(value.toString() + expr + expr.getObject());
         if (value instanceof LoxClass) {
             return ((LoxClass) value).get(expr.getName());
         }
