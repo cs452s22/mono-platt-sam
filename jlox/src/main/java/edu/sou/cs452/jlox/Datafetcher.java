@@ -41,6 +41,12 @@ public class Datafetcher {
         // create an interpreter
         Interpreter intr = new Interpreter();
 
+        // create a resolver
+        Resolver resolver = new Resolver(intr);
+
+        // resolve the statements
+        resolver.resolve(stmts);
+
         // interpret the statements
         intr.interpret(stmts);
         

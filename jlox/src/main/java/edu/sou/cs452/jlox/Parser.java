@@ -284,10 +284,18 @@ public class Parser {
           if (match(LEFT_PAREN)) {
             expr = finishCall(expr);
             } else if (match(DOT)) {
-            Token name = consume(IDENTIFIER,
-                "Expect property name after '.'.");
-            expr = new Get(current, expr, name);
-          } else { break; }
+                Token name;
+                if (check(IDENTIFIER)) {
+                    name = consume(IDENTIFIER, "Expect property name after '.'.");
+                } else if (check(PROTO)) {
+                    name = consume(PROTO, "Expect proto after '.'.");
+                } else {
+                    throw error(peek(), "Expect property or proto after dot.");
+                }
+                expr = new Get(current, expr, name);
+            } else {
+                break;
+            }
         }
     
         return expr;
@@ -399,16 +407,6 @@ public class Parser {
                 case PRINT:
                 case RETURN:
                     return;
-                case PROTO:
-                    Token name = consume(IDENTIFIER, "Expect property name after '.'.");
-                    // Token name;
-                    if (check(IDENTIFIER)) {
-                        name = consume(IDENTIFIER, "Expect property name after '.'.");
-                    } else if (check(PROTO)) {
-                        name = consume(PROTO, "Expect proto after '.'.");
-                    } else {
-                        throw error(peek(), "Expect property or proto after dot.");
-                    }
             }
             advance();
         }
