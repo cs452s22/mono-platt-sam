@@ -9,19 +9,27 @@ import java.util.Map;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
-class LoxClass extends Class implements LoxCallable {
+public class LoxClass extends Class implements LoxCallable {
   final String name;
   private LoxClass superklass;
   public final Map<String, LoxFunction> methods;
-  private final Map<String, LiteralValue> fields = new HashMap<>();
+  private final Map<String, LiteralValue> fields;
+
+  LoxClass(LoxClass klass) {
+    this.name = klass.name;
+    this.methods = klass.methods;
+    this.fields = klass.fields;
+    this.superklass = klass.superklass;
+  }
 
   LoxClass(String name, LoxClass superklass, Map<String, LoxFunction> methods) {
     this.name = name;
     this.superklass = superklass;
     this.methods = methods;
+    this.fields = new HashMap<String, LiteralValue>();
   }
 
-  LoxFunction findMethod(String name) {
+  protected LoxFunction findMethod(String name) {
     if (methods.containsKey(name)) {
       return methods.get(name);
     }
@@ -38,6 +46,7 @@ class LoxClass extends Class implements LoxCallable {
   }
 
   LiteralValue get(Token name) {
+    
     if (fields.containsKey(name.getLexeme())) {
       return fields.get(name.getLexeme());
     }
@@ -63,7 +72,7 @@ class LoxClass extends Class implements LoxCallable {
 
   @Override
   public LiteralValue call(Interpreter interpreter, List<LiteralValue> arguments) {
-    LoxClass instance = new LoxClass("", this, new HashMap<>());
+    LoxClass instance = new LoxClass("", this, new HashMap<String, LoxFunction>());
     LoxFunction initializer = findMethod("init");
     if (initializer != null) {
       initializer.bind(instance).call(interpreter, arguments);

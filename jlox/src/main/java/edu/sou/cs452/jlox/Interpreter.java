@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void> { // changed this line for lab 4
 
-    final Environment globals = new Environment();
-    private Environment environment = globals; 
+    final Environment<LiteralValue> globals = new Environment<LiteralValue>();
+    private Environment<LiteralValue> environment = globals; 
     private final Map<Expr, Integer> locals = new HashMap<>();
     public String outputString = ""; // to be used by the elm frontend later in lab 4
 
@@ -52,8 +52,8 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         locals.put(expr, depth);
     }
 
-    Void executeBlock(List<Stmt> statements, Environment environment) {
-        Environment previous = this.environment;
+    Void executeBlock(List<Stmt> statements, Environment<LiteralValue> environment) {
+        Environment<LiteralValue> previous = this.environment;
         try {
             this.environment = environment;
 
@@ -68,7 +68,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public Void visitBlockStmt(Block stmt) {
-        executeBlock(stmt.getStatements(), new Environment(environment));
+        executeBlock(stmt.getStatements(), new Environment<LiteralValue>(environment));
         return null;
     }
 
@@ -354,7 +354,8 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     private LiteralValue lookUpVariable(Token name, Expr expr) {
         Integer distance = locals.get(expr);
         if (distance != null) {
-            return environment.getAt(distance, name.getLexeme());
+           LiteralValue value = environment.getAt(distance, name.getLexeme());
+           return value;
         } else {
             return globals.get(name);
         }
@@ -421,7 +422,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
         }
         environment.define(stmt.getName().getLexeme(), null);
         if (stmt.getSuperclass() != null) {
-            environment = new Environment(environment);
+            environment = new Environment<LiteralValue>(environment);
             environment.define("super", superclass);
         }
         Map<String, LoxFunction> methods = new HashMap<>();
@@ -452,7 +453,8 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     @Override
     public LiteralValue visitSetExpr(Set expr) {
         LiteralValue objValue = evaluate(expr.getObject());
-
+        // System.out.println(expr.getObject());
+        // System.out.println(objValue);
         if (!(objValue instanceof LoxClass)) { 
             throw new RuntimeError(expr.getName(), "Only classes have fields.");
         }
@@ -464,12 +466,9 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
             ((LoxClass) objValue).set(expr.getName(), accept(expr.getValue()));
         }
 
-
         LiteralValue value = evaluate(expr.getValue());
         ((LoxClass)objValue).set(expr.getName(), value);
         return value;
-
-        
     }
 
     @Override

@@ -4,16 +4,18 @@ import edu.sou.cs452.jlox.generated.types.*;
 import java.util.HashMap;
 import java.util.Map;
 
-class Environment {
-    final Environment enclosing;
-    private final Map<String, LiteralValue> values = new HashMap<>();
+class Environment<LiteralValue> {
+    final Environment<LiteralValue> enclosing;
+    protected Map<String, LiteralValue> values;
 
     Environment() {
-        enclosing = null;
+        this.enclosing = null;
+        this.values = new HashMap<String, LiteralValue>();
     }
     
-    Environment(Environment enclosing) {
+    Environment(Environment<LiteralValue> enclosing) {
         this.enclosing = enclosing;
+        this.values = new HashMap<String, LiteralValue>();
     }
 
     LiteralValue get(Token name) {
@@ -49,16 +51,27 @@ class Environment {
         values.put(name, value);
     }
 
-    Environment ancestor(int distance) {
-        Environment environment = this;
+    Environment<LiteralValue> ancestor(int distance) {
+        Environment<LiteralValue> environment = this;
         for (int i = 0; i < distance; i++) {
             environment = environment.enclosing;
         }
         return environment;
     }
 
+    
     LiteralValue getAt(int distance, String name) {
-        return ancestor(distance).values.get(name);
+        Environment<LiteralValue> e = ancestor(distance);
+        return e.values.get(name);
+        /*
+        Environment<LiteralValue> e = ancestor(distance);
+        Map<String, LiteralValue> m = e.values;
+        LiteralValue v = m.get(name);
+        System.out.println("\tname: " + name);
+        System.out.println("\tvalues: " + m.toString());
+        System.out.println("\tLiteralValue: " + v);
+        return v;
+        */
     }
 
     void assignAt(int distance, Token name, LiteralValue value) {
