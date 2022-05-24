@@ -68,8 +68,7 @@ class LoxClass extends Class implements LoxCallable {
     if (initializer != null) {
       initializer.bind(instance).call(interpreter, arguments);
     }
-    LoxClass klass = this.superklass;
-    return klass;
+    return instance;
   }
 
   @Override

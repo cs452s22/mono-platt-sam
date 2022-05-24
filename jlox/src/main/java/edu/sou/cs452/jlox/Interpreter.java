@@ -352,9 +352,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     }
 
     private LiteralValue lookUpVariable(Token name, Expr expr) {
-        System.out.println("Hello?????????" + expr + "..." + name);
         Integer distance = locals.get(expr);
-        System.out.println("Bar" + distance);
         if (distance != null) {
             return environment.getAt(distance, name.getLexeme());
         } else {
@@ -420,9 +418,6 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
                 throw new RuntimeError(stmt.getSuperclass().getName(),
                     "Superclass must be a class.");
             }
-        } else {
-            System.out.println("stmt: " + stmt.toString());
-            throw new RuntimeError(stmt.getName(), "stmt.getSuperClass() is null");
         }
         environment.define(stmt.getName().getLexeme(), null);
         if (stmt.getSuperclass() != null) {
@@ -501,10 +496,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public LiteralValue visitGetExpr(Get expr) {
-        // LiteralValue value = evaluate(expr.getObject()); // original
-        LiteralValue value = accept(expr.getObject()); // new version???
-        System.out.println("Foo" + expr.getObject());
-        //System.out.println(value.toString() + expr + expr.getObject());
+        LiteralValue value = accept(expr.getObject());
         if (value instanceof LoxClass) {
             return ((LoxClass) value).get(expr.getName());
         }
