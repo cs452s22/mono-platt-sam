@@ -14,8 +14,6 @@ public class Datafetcher {
     public String run(@InputArgument String code, String input) {
         if (code.contains("getC()")) {
             int getCStartIndex = code.indexOf("getC");
-            // System.out.println(code.substring(0, getCStartIndex));
-            // System.out.println(code.substring(getCStartIndex));
             String newString = code.substring(0, getCStartIndex + 5) + input + code.substring(getCStartIndex+5);
             code = newString;
         }

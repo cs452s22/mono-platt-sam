@@ -63,15 +63,6 @@ class Environment<LiteralValue> {
     LiteralValue getAt(int distance, String name) {
         Environment<LiteralValue> e = ancestor(distance);
         return e.values.get(name);
-        /*
-        Environment<LiteralValue> e = ancestor(distance);
-        Map<String, LiteralValue> m = e.values;
-        LiteralValue v = m.get(name);
-        System.out.println("\tname: " + name);
-        System.out.println("\tvalues: " + m.toString());
-        System.out.println("\tLiteralValue: " + v);
-        return v;
-        */
     }
 
     void assignAt(int distance, Token name, LiteralValue value) {

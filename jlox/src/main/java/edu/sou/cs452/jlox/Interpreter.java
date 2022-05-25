@@ -354,8 +354,7 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     private LiteralValue lookUpVariable(Token name, Expr expr) {
         Integer distance = locals.get(expr);
         if (distance != null) {
-           LiteralValue value = environment.getAt(distance, name.getLexeme());
-           return value;
+           return environment.getAt(distance, name.getLexeme());
         } else {
             return globals.get(name);
         }
@@ -452,21 +451,17 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
 
     @Override
     public LiteralValue visitSetExpr(Set expr) {
-        LiteralValue objValue = evaluate(expr.getObject());
-        if (!(objValue instanceof LoxClass)) { 
+        LiteralValue object = accept(expr.getObject());
+        if (!(object instanceof LoxClass)) {
             throw new RuntimeError(expr.getName(), "Only classes have fields.");
         }
-
-        LiteralValue value = accept(expr.getValue());
+        LiteralValue value = evaluate(expr.getValue());
         // Prototype-based inheritance by setting super directly.
         if (expr.getName().getType() == TokenType.PROTO) {
-            ((LoxClass) objValue).setSuperklass((LoxClass) accept(expr.getValue()));
+            ((LoxClass) object).setSuperklass((LoxClass) value);
         } else {
-            ((LoxClass) objValue).set(expr.getName(), value);
+            ((LoxClass) object).set(expr.getName(), value);
         }
-
-        ((LoxClass)objValue).set(expr.getName(), value);
-
         return value;
     }
 
