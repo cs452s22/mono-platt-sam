@@ -87,7 +87,7 @@ public class Resolver implements ExprVisitor<Void>, StmtVisitor<Void> {
 
     // resolve the variable itself using a helper
     private void resolveLocal(Expr expr, Token name) {
-        for (int i = scopes.size() - 1; i >= 0; i--) { // TODO: this might be suspicious
+        for (int i = scopes.size() - 1; i >= 0; i--) {
             if (scopes.get(i).containsKey(name.getLexeme())) {
                 interpreter.resolve(expr, scopes.size() - 1 - i);
                 return;
