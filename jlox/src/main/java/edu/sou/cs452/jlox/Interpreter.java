@@ -453,21 +453,20 @@ public class Interpreter implements ExprVisitor<LiteralValue>, StmtVisitor<Void>
     @Override
     public LiteralValue visitSetExpr(Set expr) {
         LiteralValue objValue = evaluate(expr.getObject());
-        // System.out.println(expr.getObject());
-        // System.out.println(objValue);
         if (!(objValue instanceof LoxClass)) { 
             throw new RuntimeError(expr.getName(), "Only classes have fields.");
         }
 
+        LiteralValue value = accept(expr.getValue());
         // Prototype-based inheritance by setting super directly.
         if (expr.getName().getType() == TokenType.PROTO) {
-            ((LoxClass) objValue).setSuperklass((LoxClass) expr.getValue());
+            ((LoxClass) objValue).setSuperklass((LoxClass) accept(expr.getValue()));
         } else {
-            ((LoxClass) objValue).set(expr.getName(), accept(expr.getValue()));
+            ((LoxClass) objValue).set(expr.getName(), value);
         }
 
-        LiteralValue value = evaluate(expr.getValue());
         ((LoxClass)objValue).set(expr.getName(), value);
+
         return value;
     }
 
