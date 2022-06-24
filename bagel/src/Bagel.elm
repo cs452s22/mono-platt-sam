@@ -20,7 +20,7 @@ type alias Response =
     String
 
 type alias Token =
-    { type_: TokenType
+    { type_: TokenType -- type is a reserved word
     , lexeme: String
     , line: Int
     }
@@ -42,7 +42,7 @@ query model =
 makeRequest : Model -> Cmd Msg
 makeRequest model =
     query model
-        |> Graphql.Http.queryRequest "http://localhost:8080/graphql"
+        |> Graphql.Http.queryRequest "http://localhost:8000/graphql"
         |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
 
 type alias Flags =
@@ -76,7 +76,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
-
 view : Model -> Html Msg
 view model =
     div []
@@ -88,11 +87,10 @@ view model =
             [ viewResponse model.tokens ]
         ]
 
--- This function is what adds the brackets and also displays the type
-addBrackets : Token -> String
+-- This function is what adds the brackets and also displays the type of the Token
+addBrackets : Token -> String -- takes a Token as input, returns String
 addBrackets model =
-    "<" ++ Api.Enum.TokenType.toString(model.type_) ++ ">"
-
+    "<" ++ Api.Enum.TokenType.toString(model.type_) ++ ">" -- convert the token type to a string and add angle brackets on both sides
 
 viewResponse model =
     case model of

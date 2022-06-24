@@ -1,11 +1,15 @@
 package edu.sou.cs452.jlox;
 
+import edu.sou.cs452.jlox.generated.types.*;
+import edu.sou.cs452.jlox.generated.types.LiteralFloat;
+import edu.sou.cs452.jlox.generated.types.LiteralString;
+import edu.sou.cs452.jlox.generated.types.LiteralValue;
+import edu.sou.cs452.jlox.generated.types.Token;
+import edu.sou.cs452.jlox.generated.types.TokenType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import edu.sou.cs452.jlox.generated.types.*;
 
 import static edu.sou.cs452.jlox.generated.types.TokenType.*;
 
@@ -91,7 +95,7 @@ class Scanner {
                     // a C style block comment that goes from /* until */ is seen or the end is reached
                     while (peek() !='*' && peekNext() != '/' && !isAtEnd()) {
                         advance();
-                        advance();
+                        // advance();
                     }
                 } else addToken(SLASH);
                 break;

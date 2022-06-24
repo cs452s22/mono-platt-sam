@@ -6,6 +6,8 @@ import com.netflix.graphql.dgs.InputArgument;
 import edu.sou.cs452.jlox.generated.types.*;
 import java.util.List;
 
+import static edu.sou.cs452.jlox.generated.types.TokenType.*;
+
 @DgsComponent
 public class TokensDatafetcher {
     @DgsQuery
