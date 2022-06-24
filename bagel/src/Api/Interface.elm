@@ -7,3 +7,7 @@ module Api.Interface exposing (..)
 
 type Expr
     = Expr
+
+
+type Stmt
+    = Stmt

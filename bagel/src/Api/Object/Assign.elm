@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.LiteralBoolean exposing (..)
+module Api.Object.Assign exposing (..)
 
 import Api.InputObject
 import Api.Interface
@@ -19,6 +19,20 @@ import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-value : SelectionSet Bool Api.Object.LiteralBoolean
-value =
-    Object.selectionForField "Bool" "value" [] Decode.bool
+id : SelectionSet Int Api.Object.Assign
+id =
+    Object.selectionForField "Int" "id" [] Decode.int
+
+
+name :
+    SelectionSet decodesTo Api.Object.Token
+    -> SelectionSet decodesTo Api.Object.Assign
+name object____ =
+    Object.selectionForCompositeField "name" [] object____ Basics.identity
+
+
+value :
+    SelectionSet decodesTo Api.Interface.Expr
+    -> SelectionSet decodesTo Api.Object.Assign
+value object____ =
+    Object.selectionForCompositeField "value" [] object____ Basics.identity

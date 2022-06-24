@@ -1,5 +1,7 @@
 type Query {
   tokens(code: String!): [Token!]!
+  run(code: String!) : String! # added during part 2
+
 }
 
 enum TokenType {
@@ -53,47 +55,75 @@ type Token {
   line : Int!
 }
 
+### Literal Types
 union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull
-
-type LiteralString {
-  value : String!
-}
-
-type LiteralFloat {
-  value : Float!
-}
 
 type LiteralBoolean {
   value : Boolean!
 }
-
+type LiteralFloat {
+  value : Float!
+}
 type LiteralNull {
   value : Boolean!
 }
+type LiteralString {
+  value : String!
+}
+
+### Interface Expr Types
 
 interface Expr {
   id : Int!
 }
-
+type Assign implements Expr {
+  id : Int!
+  name : Token!
+  value : Expr!
+}
 type Binary implements Expr {
   id : Int!
   left : Expr!
   operator : Token!
   right : Expr!
 }
-
+type Grouping implements Expr {
+  id : Int!
+  expression : Expr!
+}
+type Literal implements Expr {
+  id : Int!
+  value : LiteralValue!
+}
 type Unary implements Expr {
   id : Int!
   operator : Token!
   right : Expr!
 }
-
-type Literal implements Expr {
+type Variable implements Expr {
   id : Int!
-  value : LiteralValue!
+  name : Token!
 }
 
-type Grouping implements Expr {
+#### Interface Stmt Types
+
+interface Stmt {
+  id : Int! 
+}
+type Block implements Stmt {
+  id : Int!
+  statements : [Stmt!]
+}
+type Expression implements Stmt {
   id : Int!
   expression : Expr!
+}
+type Print implements Stmt {
+  id : Int!
+  expression : Expr!
+}
+type Var implements Stmt {
+  id : Int!
+  name : Token!
+  initializer : Expr!
 }

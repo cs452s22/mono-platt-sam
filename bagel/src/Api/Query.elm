@@ -29,3 +29,14 @@ tokens :
     -> SelectionSet (List decodesTo) RootQuery
 tokens requiredArgs____ object____ =
     Object.selectionForCompositeField "tokens" [ Argument.required "code" requiredArgs____.code Encode.string ] object____ (Basics.identity >> Decode.list)
+
+
+type alias RunRequiredArguments =
+    { code : String }
+
+
+run :
+    RunRequiredArguments
+    -> SelectionSet String RootQuery
+run requiredArgs____ =
+    Object.selectionForField "String" "run" [ Argument.required "code" requiredArgs____.code Encode.string ] Decode.string

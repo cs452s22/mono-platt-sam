@@ -5,8 +5,20 @@
 module Api.Object exposing (..)
 
 
+type Assign
+    = Assign
+
+
 type Binary
     = Binary
+
+
+type Block
+    = Block
+
+
+type Expression
+    = Expression
 
 
 type Grouping
@@ -33,9 +45,21 @@ type LiteralString
     = LiteralString
 
 
+type Print
+    = Print
+
+
 type Token
     = Token
 
 
 type Unary
     = Unary
+
+
+type Var
+    = Var
+
+
+type Variable
+    = Variable

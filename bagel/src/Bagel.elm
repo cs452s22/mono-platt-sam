@@ -6,10 +6,10 @@ import Api.Object exposing (Token)
 import Api.Object.Token as TokenFields
 import Api.Query as Query
 import Browser
-import Graphql.Http
+import Graphql.Http exposing (..)
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet)
-import Html exposing (Html, button, div, input, text)
+import Html exposing (Html, button, div, text, textarea)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import RemoteData exposing (RemoteData)
@@ -17,7 +17,7 @@ import RemoteData exposing (RemoteData)
 -- Main
 
 type alias Response =
-    List Token
+    String
 
 type alias Token =
     { type_: TokenType -- type is a reserved word
@@ -26,26 +26,18 @@ type alias Token =
     }
 
 type Msg
-    = GotResponse (RemoteData (Graphql.Http.Error Response) Response)
+    = GotResponse (RemoteData (Graphql.Http.Error String) String)
     | ChangeText String
-    | Scan
+    | Run -- changed from Scan to Run for lab 4
 
 type alias Model =
-    { code: String -- changed from filter to code for lab 3
-    , tokens: RemoteData (Graphql.Http.Error Response) Response
+    { code : String -- changed from filter to code for lab 3
+    , tokens : RemoteData (Graphql.Http.Error String) String
     }
 
-query : Model -> SelectionSet Response RootQuery
+query : Model -> SelectionSet String RootQuery
 query model =
-    Query.tokens { code = model.code } tokenInfoSelection -- changed from filter to code
-
-
-tokenInfoSelection : SelectionSet Token Api.Object.Token
-tokenInfoSelection =
-    SelectionSet.map3 Token
-        TokenFields.type_
-        TokenFields.lexeme
-        TokenFields.line
+    Query.run { code = model.code } -- changed from filter to code for lab 3; changed to Query.run for lab 4
 
 makeRequest : Model -> Cmd Msg
 makeRequest model =
@@ -58,7 +50,7 @@ type alias Flags =
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( { tokens = RemoteData.NotAsked, code = "" }, Cmd.none ) -- changed from filter to code
+    ( { tokens = RemoteData.NotAsked, code = "" }, Cmd.none ) -- changed from filter to code for lab 3
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -67,9 +59,9 @@ update msg model =
             ( { model | tokens = response }, Cmd.none )
 
         ChangeText s ->
-            ( { model | code = s }, Cmd.none ) -- changed from filter to code
+            ( { model | code = s }, Cmd.none ) -- changed from filter to code for lab 3
 
-        Scan ->
+        Run -> -- changed from Scan to Run for lab 4
             ( model, makeRequest model )
 
 main =
@@ -87,9 +79,9 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div []
-        [ input [ value model.code, onInput ChangeText ] [] -- changed from filter to code
+        [ textarea [ value model.code, onInput ChangeText ] [] -- changed from filter to code for lab 3
         , div []
-            [ button [ onClick Scan ] [ text "Get Tokens" ]
+            [ button [ onClick Run ] [ text "Run Interpretor" ] -- changed from Scan to Run for lab 4
             ]
         , div []
             [ viewResponse model.tokens ]
@@ -103,13 +95,25 @@ addBrackets model =
 viewResponse model =
     case model of
         RemoteData.NotAsked ->
+            -- when the user hasn't run the program
             text ""
 
         RemoteData.Loading ->
+            -- when the program is loading
             text "loading"
 
         RemoteData.Success response ->
-            text (String.join " " (List.map addBrackets response)) -- changed this line to make it work
-
-        RemoteData.Failure httpError ->
-            text ("Error: " ++ Debug.toString httpError)
+            -- when the program ahs run and the result is available
+            -- text (String.join " " (List.map addBrackets response)) -- changed this line to make it work
+            text (response)
+        RemoteData.Failure err ->
+            case err of
+                HttpError NetworkError ->
+                    -- Cannot connect to server
+                    text ("Http Error: Network Error")
+                GraphqlError _ errors ->
+                    -- Program returns an exception
+                    text ("Graphql Error: " ++ Debug.toString errors)
+                _ ->
+                    -- Other, unknown error
+                    text ("Error: " ++ Debug.toString err)
