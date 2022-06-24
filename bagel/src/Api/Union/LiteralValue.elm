@@ -24,6 +24,7 @@ type alias Fragments decodesTo =
     , onLiteralFloat : SelectionSet decodesTo Api.Object.LiteralFloat
     , onLiteralBoolean : SelectionSet decodesTo Api.Object.LiteralBoolean
     , onLiteralNull : SelectionSet decodesTo Api.Object.LiteralNull
+    , onFunction : SelectionSet decodesTo Api.Object.Function
     }
 
 
@@ -38,6 +39,7 @@ fragments selections____ =
         , Object.buildFragment "LiteralFloat" selections____.onLiteralFloat
         , Object.buildFragment "LiteralBoolean" selections____.onLiteralBoolean
         , Object.buildFragment "LiteralNull" selections____.onLiteralNull
+        , Object.buildFragment "Function" selections____.onFunction
         ]
 
 
@@ -50,4 +52,5 @@ maybeFragments =
     , onLiteralFloat = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onLiteralBoolean = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onLiteralNull = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onFunction = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     }

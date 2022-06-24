@@ -4,9 +4,6 @@ import edu.sou.cs452.jlox.generated.types.*;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO: remove the following import if commenting it out doesn't cause errors
-// import static edu.sou.cs452.jlox.generated.types.TokenType.*;
-
 class Environment {
     final Environment enclosing;
     private final Map<String, LiteralValue> values = new HashMap<>();
@@ -24,7 +21,10 @@ class Environment {
           return values.get(name.getLexeme());
         }
 
-        if (enclosing != null) { return enclosing.get(name); }
+        // If the variable isn’t found in this environment, we simply try the enclosing one
+        if (enclosing != null) {
+            return enclosing.get(name);
+        }
     
         throw new RuntimeError(name,
             "Undefined variable '" + name.getLexeme() + "'.");
@@ -47,5 +47,21 @@ class Environment {
 
     void define(String name, LiteralValue value) {
         values.put(name, value);
+    }
+
+    Environment ancestor(int distance) {
+        Environment environment = this;
+        for (int i = 0; i < distance; i++) {
+            environment = environment.enclosing;
+        }
+        return environment;
+    }
+
+    LiteralValue getAt(int distance, String name) {
+        return ancestor(distance).values.get(name);
+    }
+
+    void assignAt(int distance, Token name, LiteralValue value) {
+        ancestor(distance).values.put(name.getLexeme(), value);
     }
 }

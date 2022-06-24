@@ -1,7 +1,7 @@
 type Query {
   tokens(code: String!): [Token!]!
-  run(code: String!) : String! # added during part 2
-
+  run(code: String!, input: String!) : String! # added during part 2
+  # sign(code: String!) : String! # added during lab 5 part 1
 }
 
 enum TokenType {
@@ -46,6 +46,7 @@ enum TokenType {
   VAR
   WHILE
   EOF
+
 }
 
 type Token {
@@ -56,7 +57,7 @@ type Token {
 }
 
 ### Literal Types
-union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull
+union LiteralValue = LiteralString | LiteralFloat | LiteralBoolean | LiteralNull | Function
 
 type LiteralBoolean {
   value : Boolean!
@@ -87,13 +88,45 @@ type Binary implements Expr {
   operator : Token!
   right : Expr!
 }
+type Call implements Expr {
+  id : Int!
+  callee : Expr!
+  paren : Token!
+  arguments : [Expr!]! # two exclamation marks makes this a required argument
+}
+type Get implements Expr {
+  id : Int!
+  object : Expr!
+  name : Token!
+}
 type Grouping implements Expr {
   id : Int!
   expression : Expr!
 }
 type Literal implements Expr {
   id : Int!
-  value : LiteralValue!
+  value : LiteralValue! # LiteralValue instead of Object
+}
+type Logical implements Expr {
+  id : Int!
+  left : Expr!
+  operator : Token!
+  right : Expr!
+}
+type Set implements Expr {
+  id : Int!
+  object : Expr!
+  name : Token!
+  value : Expr!
+}
+type Super implements Expr { # the super expression itself contains only the token for the super keyword and the name of the method being looked up
+  id : Int!
+  keyword : Token!
+  method : Token!
+}
+type This implements Expr {
+  id : Int!
+  keyword : Token!
 }
 type Unary implements Expr {
   id : Int!
@@ -114,16 +147,49 @@ type Block implements Stmt {
   id : Int!
   statements : [Stmt!]
 }
+type Class implements Stmt {
+  id : Int!
+  name : Token!
+  superclass : Variable!
+  methods : [Function!]
+}
 type Expression implements Stmt {
   id : Int!
   expression : Expr!
+}
+type For implements Stmt {
+  id : Int!
+  condition : Expr!
+  
+}
+type Function implements Stmt {
+  id : Int!
+  name : Token!
+  params : [Token!]
+  body : [Stmt!]
+}
+type If implements Stmt {
+  id : Int!
+  condition : Expr!
+  thenBranch : Stmt!
+  elseBranch : Stmt!
 }
 type Print implements Stmt {
   id : Int!
   expression : Expr!
 }
+type Return implements Stmt {
+  id : Int!
+  keyword : Token!
+  value : Expr!
+}
 type Var implements Stmt {
   id : Int!
   name : Token!
   initializer : Expr!
+}
+type While implements Stmt {
+  id : Int!
+  condition : Expr!
+  body : Stmt!
 }

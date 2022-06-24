@@ -17,12 +17,36 @@ type Block
     = Block
 
 
+type Call
+    = Call
+
+
+type Class
+    = Class
+
+
 type Expression
     = Expression
 
 
+type For
+    = For
+
+
+type Function
+    = Function
+
+
+type Get
+    = Get
+
+
 type Grouping
     = Grouping
+
+
+type If
+    = If
 
 
 type Literal
@@ -45,8 +69,28 @@ type LiteralString
     = LiteralString
 
 
+type Logical
+    = Logical
+
+
 type Print
     = Print
+
+
+type Return
+    = Return
+
+
+type Set
+    = Set
+
+
+type Super
+    = Super
+
+
+type This
+    = This
 
 
 type Token
@@ -63,3 +107,7 @@ type Var
 
 type Variable
     = Variable
+
+
+type While
+    = While

@@ -32,11 +32,13 @@ tokens requiredArgs____ object____ =
 
 
 type alias RunRequiredArguments =
-    { code : String }
+    { code : String
+    , input : String
+    }
 
 
 run :
     RunRequiredArguments
     -> SelectionSet String RootQuery
 run requiredArgs____ =
-    Object.selectionForField "String" "run" [ Argument.required "code" requiredArgs____.code Encode.string ] Decode.string
+    Object.selectionForField "String" "run" [ Argument.required "code" requiredArgs____.code Encode.string, Argument.required "input" requiredArgs____.input Encode.string ] Decode.string
