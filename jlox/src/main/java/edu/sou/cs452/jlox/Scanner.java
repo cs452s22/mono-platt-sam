@@ -31,6 +31,7 @@ class Scanner {
         keywords.put("nil",    NIL);
         keywords.put("or",     OR);
         keywords.put("print",  PRINT);
+        keywords.put("proto",  PROTO);
         keywords.put("return", RETURN);
         keywords.put("super",  SUPER);
         keywords.put("this",   THIS);
@@ -129,7 +130,9 @@ class Scanner {
         }
         String text = source.substring(start, current);
         TokenType type = keywords.get(text);
-        if (type == null) type = IDENTIFIER;
+        if (type == null) {
+            type = IDENTIFIER;
+        }
         addToken(type);
     }
 

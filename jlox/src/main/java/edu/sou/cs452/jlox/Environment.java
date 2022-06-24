@@ -4,19 +4,18 @@ import edu.sou.cs452.jlox.generated.types.*;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO: remove the following import if commenting it out doesn't cause errors
-// import static edu.sou.cs452.jlox.generated.types.TokenType.*;
-
-class Environment {
-    final Environment enclosing;
-    private final Map<String, LiteralValue> values = new HashMap<>();
+class Environment<LiteralValue> {
+    final Environment<LiteralValue> enclosing;
+    protected Map<String, LiteralValue> values;
 
     Environment() {
-        enclosing = null;
+        this.enclosing = null;
+        this.values = new HashMap<String, LiteralValue>();
     }
     
-    Environment(Environment enclosing) {
+    Environment(Environment<LiteralValue> enclosing) {
         this.enclosing = enclosing;
+        this.values = new HashMap<String, LiteralValue>();
     }
 
     LiteralValue get(Token name) {
@@ -24,7 +23,10 @@ class Environment {
           return values.get(name.getLexeme());
         }
 
-        if (enclosing != null) { return enclosing.get(name); }
+        // If the variable isn’t found in this environment, we simply try the enclosing one
+        if (enclosing != null) {
+            return enclosing.get(name);
+        }
     
         throw new RuntimeError(name,
             "Undefined variable '" + name.getLexeme() + "'.");
@@ -47,5 +49,23 @@ class Environment {
 
     void define(String name, LiteralValue value) {
         values.put(name, value);
+    }
+
+    Environment<LiteralValue> ancestor(int distance) {
+        Environment<LiteralValue> environment = this;
+        for (int i = 0; i < distance; i++) {
+            environment = environment.enclosing;
+        }
+        return environment;
+    }
+
+    
+    LiteralValue getAt(int distance, String name) {
+        Environment<LiteralValue> e = ancestor(distance);
+        return e.values.get(name);
+    }
+
+    void assignAt(int distance, Token name, LiteralValue value) {
+        ancestor(distance).values.put(name.getLexeme(), value);
     }
 }

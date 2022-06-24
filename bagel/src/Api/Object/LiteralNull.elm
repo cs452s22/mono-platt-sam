@@ -6,7 +6,7 @@ module Api.Object.LiteralNull exposing (..)
 
 import Api.InputObject
 import Api.Interface
-import Api.Object exposing (..)
+import Api.Object
 import Api.Scalar
 import Api.ScalarCodecs
 import Api.Union

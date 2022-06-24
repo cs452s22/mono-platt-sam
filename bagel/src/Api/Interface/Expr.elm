@@ -22,8 +22,14 @@ import Json.Decode as Decode
 type alias Fragments decodesTo =
     { onAssign : SelectionSet decodesTo Api.Object.Assign
     , onBinary : SelectionSet decodesTo Api.Object.Binary
+    , onCall : SelectionSet decodesTo Api.Object.Call
+    , onGet : SelectionSet decodesTo Api.Object.Get
     , onGrouping : SelectionSet decodesTo Api.Object.Grouping
     , onLiteral : SelectionSet decodesTo Api.Object.Literal
+    , onLogical : SelectionSet decodesTo Api.Object.Logical
+    , onSet : SelectionSet decodesTo Api.Object.Set
+    , onSuper : SelectionSet decodesTo Api.Object.Super
+    , onThis : SelectionSet decodesTo Api.Object.This
     , onUnary : SelectionSet decodesTo Api.Object.Unary
     , onVariable : SelectionSet decodesTo Api.Object.Variable
     }
@@ -38,8 +44,14 @@ fragments selections____ =
     Object.exhaustiveFragmentSelection
         [ Object.buildFragment "Assign" selections____.onAssign
         , Object.buildFragment "Binary" selections____.onBinary
+        , Object.buildFragment "Call" selections____.onCall
+        , Object.buildFragment "Get" selections____.onGet
         , Object.buildFragment "Grouping" selections____.onGrouping
         , Object.buildFragment "Literal" selections____.onLiteral
+        , Object.buildFragment "Logical" selections____.onLogical
+        , Object.buildFragment "Set" selections____.onSet
+        , Object.buildFragment "Super" selections____.onSuper
+        , Object.buildFragment "This" selections____.onThis
         , Object.buildFragment "Unary" selections____.onUnary
         , Object.buildFragment "Variable" selections____.onVariable
         ]
@@ -52,8 +64,14 @@ maybeFragments : Fragments (Maybe decodesTo)
 maybeFragments =
     { onAssign = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onBinary = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onCall = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onGet = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onGrouping = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onLiteral = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onLogical = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onSet = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onSuper = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
+    , onThis = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onUnary = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     , onVariable = Graphql.SelectionSet.empty |> Graphql.SelectionSet.map (\_ -> Nothing)
     }

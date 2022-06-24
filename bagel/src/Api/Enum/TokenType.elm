@@ -42,6 +42,7 @@ type TokenType
     | Nil
     | Or
     | Print
+    | Proto
     | Return
     | Super
     | This
@@ -53,7 +54,7 @@ type TokenType
 
 list : List TokenType
 list =
-    [ LeftParen, RightParen, LeftBrace, RightBrace, Comma, Dot, Minus, Plus, Semicolon, Slash, Star, Bang, BangEqual, Equal, EqualEqual, Greater, GreaterEqual, Less, LessEqual, Identifier, String, Number, And, Class, Else, False, Fun, For, If, Include, Input, Nil, Or, Print, Return, Super, This, True, Var, While, Eof ]
+    [ LeftParen, RightParen, LeftBrace, RightBrace, Comma, Dot, Minus, Plus, Semicolon, Slash, Star, Bang, BangEqual, Equal, EqualEqual, Greater, GreaterEqual, Less, LessEqual, Identifier, String, Number, And, Class, Else, False, Fun, For, If, Include, Input, Nil, Or, Print, Proto, Return, Super, This, True, Var, While, Eof ]
 
 
 decoder : Decoder TokenType
@@ -163,6 +164,9 @@ decoder =
 
                     "PRINT" ->
                         Decode.succeed Print
+
+                    "PROTO" ->
+                        Decode.succeed Proto
 
                     "RETURN" ->
                         Decode.succeed Return
@@ -296,6 +300,9 @@ toString enum____ =
 
         Print ->
             "PRINT"
+
+        Proto ->
+            "PROTO"
 
         Return ->
             "RETURN"
@@ -434,6 +441,9 @@ fromString enumString____ =
 
         "PRINT" ->
             Just Print
+
+        "PROTO" ->
+            Just Proto
 
         "RETURN" ->
             Just Return
